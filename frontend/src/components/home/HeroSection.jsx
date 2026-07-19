@@ -3,7 +3,7 @@ import { locations, popularTags } from "../../constants/hero";
 
 const HeroSection = () => {
   return (
-    <section className="bg-gradient-to-b from-blue-50 via-white to-white">
+    <section className="bg-gradient-to-b' from-blue-50 via-white to-white">
       <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pt-16 pb-20 text-center">
 
         {/* Badge */}
