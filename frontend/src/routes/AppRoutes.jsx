@@ -44,8 +44,8 @@ const router = createBrowserRouter([
         element:<ProviderPage/>
       },
       {
-        path:"service-detail",
-        element:<ServiceDetailsPage/>
+        path:"/services/:serviceId",
+        element: <ServiceDetailsPage/>
       }
     ],
   },

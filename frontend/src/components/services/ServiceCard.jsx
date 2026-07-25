@@ -1,8 +1,12 @@
+import { Link } from "react-router-dom";
 import { Star, MapPin } from "lucide-react";
 
 const ServiceCard = ({ service }) => {
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <Link
+      to={`/services/${service.id}`}
+      className="block overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+    >
       {/* Image */}
       <div className="h-52 overflow-hidden">
         <img
@@ -36,9 +40,7 @@ const ServiceCard = ({ service }) => {
               size={16}
               className="fill-yellow-400 text-yellow-400"
             />
-
             <span className="font-medium">{service.rating}</span>
-
             <span className="text-sm text-gray-500">
               ({service.reviews})
             </span>
@@ -46,7 +48,6 @@ const ServiceCard = ({ service }) => {
 
           <div className="flex items-center gap-1 text-sm text-gray-500">
             <MapPin size={15} />
-
             {service.location}
           </div>
         </div>
@@ -58,15 +59,18 @@ const ServiceCard = ({ service }) => {
               ₹{service.price}
             </span>
 
-            <span className="text-sm text-gray-500"> / service</span>
+            <span className="text-sm text-gray-500">
+              {" "}
+              / service
+            </span>
           </div>
 
-          <button className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700">
-            Book Now
-          </button>
+          <span className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700">
+            View Details
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
