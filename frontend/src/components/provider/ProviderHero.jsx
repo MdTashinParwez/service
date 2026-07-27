@@ -14,24 +14,29 @@ const ProviderHero = ({ provider }) => {
         <div className="flex items-center gap-6">
 
           <img
-            src={provider.image}
-            alt={provider.name}
+            src={
+              provider?.image ||
+              "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500"
+            }
+            alt={provider?.name || "Provider"}
             className="h-32 w-32 rounded-full border-4 border-blue-100 object-cover"
           />
 
           <div>
 
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
-              <ShieldCheck size={16} />
-              Verified Provider
-            </div>
+            {provider?.isVerified && (
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                <ShieldCheck size={16} />
+                Verified Provider
+              </div>
+            )}
 
             <h1 className="text-4xl font-bold text-gray-900">
-              {provider.name}
+              {provider?.name || "Unknown Provider"}
             </h1>
 
             <p className="mt-2 text-lg text-gray-600">
-              {provider.profession}
+              {provider?.profession || "Professional"}
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-5 text-sm text-gray-600">
@@ -41,22 +46,24 @@ const ProviderHero = ({ provider }) => {
                   size={16}
                   className="fill-yellow-400 text-yellow-400"
                 />
+
                 <span className="font-semibold">
-                  {provider.rating}
+                  {provider?.rating ?? "N/A"}
                 </span>
+
                 <span>
-                  ({provider.reviews} Reviews)
+                  ({provider?.reviews ?? 0} Reviews)
                 </span>
               </div>
 
               <div className="flex items-center gap-1">
                 <MapPin size={16} />
-                {provider.location}
+                {provider?.location || "Location not available"}
               </div>
 
               <div className="flex items-center gap-1">
                 <Briefcase size={16} />
-                {provider.experience}
+                {provider?.experience || "Experience not specified"}
               </div>
 
             </div>
