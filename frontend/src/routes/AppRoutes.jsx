@@ -9,7 +9,7 @@ import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import ServicesPage from "../pages/services/ServicesPage";
 import AboutPage from "../pages/About/AboutPage";
 import ProviderPage from "../pages/Provider/ProviderPage"
-import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
+// import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,10 +43,10 @@ const router = createBrowserRouter([
         path: "provider",
         element:<ProviderPage/>
       },
-      {
-        path:"/services/:serviceId",
-        element: <ServiceDetailsPage/>
-      }
+      // {
+      //   path:"/services/:serviceId",
+      //   element: <ServiceDetailsPage/>
+      // }
     ],
   },
 ]);

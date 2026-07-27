@@ -1,48 +1,58 @@
-import ProviderCard from "../../components/servicedetails/ProviderCard";
-import ServiceDescription from "../../components/servicedetails/serviceDescription";
-import ServiceGallery from "../../components/servicedetails/ServiceGallary";
-import ServiceInfo from "../../components/servicedetails/ServiceInfo";
-import ServiceIncluded from "../../components/servicedetails/ServiceIncluded";
+// import { useParams } from "react-router-dom";
+// import { services } from "../../constants/services";
 
+// import ProviderCard from "../../components/servicedetails/ProviderCard";
+// import ServiceDescription from "../../components/servicedetails/ServiceDescription";
+// import ServiceGallery from "../../components/servicedetails/ServiceGallery";
+// import ServiceInfo from "../../components/servicedetails/ServiceInfo";
+// import ServiceIncluded from "../../components/servicedetails/ServiceIncluded";
 
-const ServiceDetailsPage = () => {
-  return (
-    <main className="min-h-screen bg-gray-50">
+// const ServiceDetailsPage = () => {
+//   const { serviceId } = useParams();
 
-      {/* Hero + Basic Service Information */}
-      <ServiceInfo />
+//   const service = services.find(
+//     (item) => item.id === Number(serviceId)
+//   );
 
-      <section className="mx-auto max-w-7xl px-6 py-12">
+//   if (!service) {
+//     return (
+//       <div className="py-20 text-center text-2xl font-semibold">
+//         Service not found
+//       </div>
+//     );
+//   }
 
-        <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
+//   return (
+//     <main className="min-h-screen bg-gray-50">
 
-          {/* Left Content */}
-          <div className="space-y-8">
+//       <ServiceInfo service={service} />
 
-            <ServiceDescription />
+//       <section className="mx-auto max-w-7xl px-6 py-12">
+//         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
 
-            <ServiceIncluded />
+//           <div className="space-y-8">
+//             <ServiceDescription service={service} />
 
-            <ServiceGallery/>
+//             <ServiceIncluded
+//               includedServices={service.includedServices}
+//             />
 
-          </div>
+//             <ServiceGallery
+//               images={service.images}
+//             />
+//           </div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-8">
+//           <div className="space-y-8">
+//             <ProviderCard
+//               provider={service.provider}
+//             />
+//           </div>
 
-            <ProviderCard />
+//         </div>
+//       </section>
 
-            {/* Booking Sidebar yaha aayega */}
-            {/* <BookingSidebar /> */}
+//     </main>
+//   );
+// };
 
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-  );
-};
-
-export default ServiceDetailsPage;
+// export default ServiceDetailsPage;
