@@ -9,6 +9,8 @@ import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import ServicesPage from "../pages/services/ServicesPage";
 import AboutPage from "../pages/About/AboutPage";
 import ProviderPage from "../pages/Provider/ProviderPage"
+import ProvidersPage from "../pages/Provider/ProvidersPage";
+
 // import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 // import ProviderPage from "../pages/Provider/ProviderPage";
 const router = createBrowserRouter([
@@ -48,10 +50,15 @@ const router = createBrowserRouter([
       //   path:"/services/:serviceId",
       //   element: <ServiceDetailsPage/>
       // }
-        {
-    path: "provider/:providerId",
-    element: <ProviderPage />,
-  },
+      {
+        path: "provider/:providerId",
+        element: <ProviderPage />,
+      },
+      {
+      path:"providers",
+      element:<ProvidersPage/>
+      },
+
     ],
   },
 ]);
