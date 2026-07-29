@@ -10,6 +10,7 @@ import ServicesPage from "../pages/services/ServicesPage";
 import AboutPage from "../pages/About/AboutPage";
 import ProviderPage from "../pages/Provider/ProviderPage"
 import ProvidersPage from "../pages/Provider/ProvidersPage";
+import BecomeProviderPage from "../pages/BecomeProvider/BecomeProviderPage";
 
 // import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 // import ProviderPage from "../pages/Provider/ProviderPage";
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       path:"providers",
       element:<ProvidersPage/>
       },
+      {
+      path: "become-provider",
+      element: <BecomeProviderPage/>,
+      }
 
     ],
   },
