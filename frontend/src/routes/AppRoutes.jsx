@@ -15,6 +15,7 @@ import BookingPage from "../pages/Booking/BookingPage";
 import BookingSuccessPage from "../pages/Booking/BookingSuccessPage";
 // import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 import MyBookingsPage from "../pages/Booking/MyBookingsPage";
+import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
 
 
 const router = createBrowserRouter([
@@ -78,6 +79,12 @@ const router = createBrowserRouter([
       path: "bookings",
       element: <MyBookingsPage />,
       },
+      {
+      path: "bookings/:bookingId",
+      element: <BookingDetailsPage/>,
+      },
+
+
 
     ],
   },
