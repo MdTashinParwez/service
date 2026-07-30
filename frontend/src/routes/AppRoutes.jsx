@@ -11,9 +11,12 @@ import AboutPage from "../pages/About/AboutPage";
 import ProviderPage from "../pages/Provider/ProviderPage"
 import ProvidersPage from "../pages/Provider/ProvidersPage";
 import BecomeProviderPage from "../pages/BecomeProvider/BecomeProviderPage";
-
+import BookingPage from "../pages/Booking/BookingPage";
+import BookingSuccessPage from "../pages/Booking/BookingSuccessPage";
 // import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
-// import ProviderPage from "../pages/Provider/ProviderPage";
+import MyBookingsPage from "../pages/Booking/MyBookingsPage";
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -62,7 +65,19 @@ const router = createBrowserRouter([
       {
       path: "become-provider",
       element: <BecomeProviderPage/>,
-      }
+      },
+      {
+      path: "booking/:serviceId",
+      element: <BookingPage />,
+      },
+      {
+      path: "booking/success",
+      element: <BookingSuccessPage />,
+      },
+      {
+      path: "bookings",
+      element: <MyBookingsPage />,
+      },
 
     ],
   },

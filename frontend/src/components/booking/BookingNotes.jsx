@@ -1,4 +1,4 @@
-const BookingAddress = ({
+const BookingNotes = ({
   formData,
   setFormData,
 }) => {
@@ -19,25 +19,21 @@ const BookingAddress = ({
     <section className="rounded-2xl border bg-white p-8 shadow-sm">
 
       <h2 className="text-2xl font-bold text-gray-900">
-        Service Address
+        Special Instructions
       </h2>
 
       <p className="mt-2 text-gray-600">
-        Enter the address where the service will be provided.
+        Add any extra instructions for the provider.
       </p>
 
       <div className="mt-8">
 
-        <label className="mb-2 block font-medium">
-          Address
-        </label>
-
         <textarea
           rows={5}
-          name="address"
-          value={formData.address}
+          name="note"
+          value={formData.note}
           onChange={handleChange}
-          placeholder="House No, Street, Landmark, City, Pincode"
+          placeholder="Any specific requirements..."
           className="w-full rounded-xl border border-gray-300 p-4 outline-none focus:border-blue-600"
         />
 
@@ -49,4 +45,4 @@ const BookingAddress = ({
 
 };
 
-export default BookingAddress;
+export default BookingNotes;
