@@ -30,7 +30,7 @@ const ServiceCard = ({ service }) => {
 
         {/* Provider */}
         <p className="mt-1 text-sm text-gray-500">
-          by {service.provider}
+          by by {service.provider?.name}
         </p>
 
         {/* Rating */}
