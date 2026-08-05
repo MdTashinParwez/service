@@ -34,7 +34,7 @@ const BookingSummary = ({ service = {} }) => {
           </p>
 
           <h3 className="mt-1 text-lg font-semibold">
-            {service.provider || "Rahul Sharma"}
+            {service.provider?.name || "Rahul Sharma"}
           </h3>
 
         </div>

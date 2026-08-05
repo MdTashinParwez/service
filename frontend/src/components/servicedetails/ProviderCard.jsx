@@ -1,126 +1,71 @@
-// import {
-//   Star,
-//   ShieldCheck,
-//   MapPin,
-//   Clock,
-//   Briefcase,
-//   ChevronRight,
-// } from "lucide-react";
+import { Star, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
-// const ProviderCard = () => {
-//   return (
-//     <section className="rounded-2xl border bg-white p-8 shadow-sm">
-//       <div className="flex flex-col gap-8 md:flex-row md:items-start">
-//         {/* Profile */}
-//         <div className="flex items-center gap-5">
-//           <img
-//             src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300"
-//             alt="Provider"
-//             className="h-24 w-24 rounded-full object-cover"
-//           />
+const ProviderCard = ({ provider }) => {
+  return (
+    <section className="rounded-3xl border bg-white p-8 shadow-sm">
 
-//           <div>
-//             <div className="flex flex-wrap items-center gap-2">
-//               <h2 className="text-2xl font-bold text-gray-900">
-//                 Rahul Sharma
-//               </h2>
+      <h2 className="text-2xl font-bold text-gray-900">
+        Service Provider
+      </h2>
 
-//               <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-//                 <ShieldCheck size={14} />
-//                 Verified
-//               </span>
-//             </div>
+      <div className="mt-8 flex items-center gap-5">
 
-//             <p className="mt-1 text-gray-600">
-//               Plumbing Specialist
-//             </p>
+        <Link to={`/providers/${provider.id}`}>
 
-//             <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-600">
-//               <div className="flex items-center gap-1">
-//                 <Star
-//                   size={16}
-//                   className="fill-yellow-400 text-yellow-400"
-//                 />
-//                 <span className="font-semibold text-gray-900">
-//                   4.8
-//                 </span>
-//                 <span>(124 Reviews)</span>
-//               </div>
+          <img
+            src={provider.image}
+            alt={provider.name}
+            className="h-24 w-24 rounded-full object-cover transition hover:opacity-90"
+          />
 
-//               <div className="flex items-center gap-1">
-//                 <MapPin size={15} />
-//                 Delhi
-//               </div>
-//             </div>
-//           </div>
-//         </div>
+        </Link>
 
-//         {/* Stats */}
-//         <div className="grid flex-1 grid-cols-2 gap-4 md:grid-cols-3">
-//           <div className="rounded-xl border p-4">
-//             <Briefcase
-//               className="mb-2 text-blue-600"
-//               size={20}
-//             />
-//             <p className="text-xl font-bold text-gray-900">
-//               320+
-//             </p>
-//             <p className="text-sm text-gray-500">
-//               Jobs Completed
-//             </p>
-//           </div>
+        <div>
 
-//           <div className="rounded-xl border p-4">
-//             <Clock
-//               className="mb-2 text-blue-600"
-//               size={20}
-//             />
-//             <p className="text-xl font-bold text-gray-900">
-//               ~30 min
-//             </p>
-//             <p className="text-sm text-gray-500">
-//               Response Time
-//             </p>
-//           </div>
+          <Link
+            to={`/providers/${provider.id}`}
+            className="text-xl font-bold transition hover:text-blue-600"
+          >
+            {provider.name}
+          </Link>
 
-//           <div className="rounded-xl border p-4">
-//             <ShieldCheck
-//               className="mb-2 text-blue-600"
-//               size={20}
-//             />
-//             <p className="text-xl font-bold text-gray-900">
-//               Since 2024
-//             </p>
-//             <p className="text-sm text-gray-500">
-//               Member Since
-//             </p>
-//           </div>
-//         </div>
-//       </div>
+          <p className="mt-1 text-gray-600">
+            {provider.profession}
+          </p>
 
-//       {/* Bio */}
-//       <div className="mt-8 border-t pt-8">
-//         <h3 className="text-lg font-semibold text-gray-900">
-//           About Provider
-//         </h3>
+          <div className="mt-3 flex items-center gap-5 text-gray-600">
 
-//         <p className="mt-4 leading-8 text-gray-600">
-//           Experienced plumbing professional specializing in residential
-//           and commercial repair services. Known for timely response,
-//           transparent pricing, and quality workmanship with a strong
-//           focus on customer satisfaction.
-//         </p>
-//       </div>
+            <div className="flex items-center gap-2">
 
-//       {/* Button */}
-//       <div className="mt-8">
-//         <button className="inline-flex items-center gap-2 rounded-xl border px-6 py-3 font-semibold transition hover:bg-gray-100">
-//           View Provider Profile
-//           <ChevronRight size={18} />
-//         </button>
-//       </div>
-//     </section>
-//   );
-// };
+              <Star
+                size={18}
+                className="fill-yellow-400 text-yellow-400"
+              />
 
-// export default ProviderCard;
+              <span>{provider.rating}</span>
+
+            </div>
+
+            <div className="flex items-center gap-2">
+
+              <MapPin
+                size={18}
+                className="text-blue-600"
+              />
+
+              <span>{provider.location}</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  );
+};
+
+export default ProviderCard;

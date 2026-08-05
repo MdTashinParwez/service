@@ -22,7 +22,7 @@ const ServicesPage = () => {
     return services.filter((service) => {
       const matchSearch =
         service.title.toLowerCase().includes(search.toLowerCase()) ||
-        service.provider.toLowerCase().includes(search.toLowerCase());
+        (service.provider?.name || "").toLowerCase().includes(search.toLowerCase());
 
       const matchCategory =
         category === "All" || service.category === category;

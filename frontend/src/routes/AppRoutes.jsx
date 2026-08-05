@@ -13,7 +13,7 @@ import ProvidersPage from "../pages/Provider/ProvidersPage";
 import BecomeProviderPage from "../pages/BecomeProvider/BecomeProviderPage";
 import BookingPage from "../pages/Booking/BookingPage";
 import BookingSuccessPage from "../pages/Booking/BookingSuccessPage";
-// import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
+import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 import MyBookingsPage from "../pages/Booking/MyBookingsPage";
 import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
 
@@ -39,10 +39,23 @@ const router = createBrowserRouter([
         path: "signup",
         element: <SignupPage />,
       },
+      // {
+      //   path:"services",
+      //   element:<ServicesPage />
+      // },
       {
-        path:"services",
-        element:<ServicesPage />
-      },
+  path: "services",
+  children: [
+    {
+      index: true,
+      element: <ServicesPage />,
+    },
+    {
+      path: ":serviceId",
+      element: <ServiceDetailsPage />,
+    },
+  ],
+},
       {
         path:"about",
         element: <AboutPage/>
