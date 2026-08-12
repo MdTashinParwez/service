@@ -5,6 +5,7 @@ export const apiClient = async (endpoint, options = {}) => {
     `${API_BASE_URL}${endpoint}`,
     {
       ...options,
+      credentials: "include",
     }
   );
 

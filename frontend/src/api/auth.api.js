@@ -16,3 +16,15 @@ export const loginUser = async (credentials) => {
     body: JSON.stringify(credentials),
   });
 };
+
+export const getCurrentUser = async () => {
+  return apiClient("/users/current-user", {
+    method: "POST",
+  });
+};
+
+export const logoutUser = async () => {
+  return apiClient("/users/logout", {
+    method: "POST",
+  });
+};
