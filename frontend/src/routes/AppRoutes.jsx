@@ -44,18 +44,18 @@ const router = createBrowserRouter([
       //   element:<ServicesPage />
       // },
       {
-  path: "services",
-  children: [
-    {
-      index: true,
-      element: <ServicesPage />,
-    },
-    {
-      path: ":serviceId",
-      element: <ServiceDetailsPage />,
-    },
-  ],
-},
+        path: "services",
+        children: [
+                    {
+                      index: true,
+                      element: <ServicesPage />,
+                    },
+                    {
+                      path: ":serviceId",
+                      element: <ServiceDetailsPage />,
+                    },
+                   ],
+      },
       {
         path:"about",
         element: <AboutPage/>
@@ -64,10 +64,7 @@ const router = createBrowserRouter([
         path: "provider",
         element:<ProviderPage/>
       },
-      // {
-      //   path:"/services/:serviceId",
-      //   element: <ServiceDetailsPage/>
-      // }
+     
       {
         path: "provider/:providerId",
         element: <ProviderPage />,
