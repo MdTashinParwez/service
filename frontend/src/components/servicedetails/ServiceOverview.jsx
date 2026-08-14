@@ -1,35 +1,42 @@
-import { ClipboardCheck, Sparkles, Wrench } from "lucide-react";
+﻿const ServiceOverview = ({ service }) => {
+  const bookingCount = new Intl.NumberFormat("en-US").format(
+    Number(service.bookingCount ?? 0)
+  );
 
-const ServiceOverview = ({ service }) => {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-      <div className="grid gap-8 lg:grid-cols-[1fr_260px]">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-            Service overview
-          </p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-950">
-            Professional {service.title.toLowerCase()} with clear scope and support
-          </h2>
-          <p className="mt-4 leading-8 text-slate-600">
-            {service.description}
+    <section className="rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-[0_18px_50px_-34px_rgba(15,23,42,0.42)] sm:p-8">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">
+        Service Overview
+      </p>
+
+      <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+        About this service
+      </h2>
+
+      <p className="mt-4 max-w-3xl leading-8 text-slate-600">
+        {service.description}
+      </p>
+
+      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl bg-slate-50 p-4">
+          <p className="text-sm text-slate-500">Duration</p>
+          <p className="mt-1 text-lg font-semibold text-slate-950">
+            {service.duration} hour{service.duration === 1 ? "" : "s"}
           </p>
         </div>
 
-        <div className="grid gap-3">
-          {[
-            { icon: ClipboardCheck, label: "Inspection report", value: "Shared after work" },
-            { icon: Wrench, label: "Tools included", value: "Professional kit" },
-            { icon: Sparkles, label: "Clean finish", value: "Area cleanup included" },
-          ].map(({ icon: Icon, label, value }) => (
-            <div key={label} className="rounded-lg bg-slate-50 p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-950">
-                <Icon size={16} className="text-blue-600" />
-                {label}
-              </div>
-              <p className="mt-1 text-sm text-slate-500">{value}</p>
-            </div>
-          ))}
+        <div className="rounded-2xl bg-slate-50 p-4">
+          <p className="text-sm text-slate-500">Service Type</p>
+          <p className="mt-1 text-lg font-semibold text-slate-950">
+            {service.serviceType === "onsite" ? "On-site" : "Online"}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-slate-50 p-4">
+          <p className="text-sm text-slate-500">Bookings</p>
+          <p className="mt-1 text-lg font-semibold text-slate-950">
+            {bookingCount}
+          </p>
         </div>
       </div>
     </section>

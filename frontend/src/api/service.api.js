@@ -1,9 +1,16 @@
 import { apiClient } from "./apiClient";
 
-export const getAllServices = async () => {
-  return apiClient("/services/all", {
-    method: "GET",
-  });
+export const getAllServices = async (
+  page = 1,
+  limit = 6,
+  search = ""
+) => {
+  return apiClient(
+    `/services/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
+    {
+      method: "GET",
+    }
+  );
 };
 
 export const getServiceById = async (id) => {
@@ -11,6 +18,7 @@ export const getServiceById = async (id) => {
     method: "GET",
   });
 };
+
 
 // export const getMyServices = async () => {
 //   return apiClient("/services/my-services", {

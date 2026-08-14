@@ -1,111 +1,112 @@
+﻿import { Link } from "react-router-dom";
 import {
   ArrowLeft,
-  BadgeCheck,
-  Clock3,
   Heart,
   MapPin,
   Share2,
   ShieldCheck,
+  Sparkles,
   Star,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const ServiceHero = ({ service }) => {
-  return (
-    <section>
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <Link
-          to="/services"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-950"
-        >
-          <ArrowLeft size={16} />
-          Services
-        </Link>
+  const images = service.images?.filter(Boolean) || [];
+  const image = images[0] || "/placeholder-service.jpg";
+  const currencyCode = service.currency || "INR";
+  const priceValue = Number(service.price ?? 0);
 
-        <div className="flex items-center gap-2">
-          <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950">
-            <Share2 size={17} />
-          </button>
-          <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
-            <Heart size={17} />
-          </button>
-        </div>
+  let formattedPrice = `${currencyCode} ${priceValue}`;
+
+  try {
+    formattedPrice = new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: currencyCode,
+      maximumFractionDigits: 0,
+    }).format(priceValue);
+  } catch {
+    formattedPrice =
+      currencyCode === "INR" ? `Rs. ${priceValue}` : `${currencyCode} ${priceValue}`;
+  }
+
+  return (
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+      {/* Image */}
+      <div className="h-[380px] overflow-hidden bg-slate-100">
+        <img
+          src={image}
+          alt={service.title}
+          className="h-full w-full object-cover"
+        />
       </div>
 
-      <div className="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_430px]">
-        <div className="relative min-h-[360px]">
-          <img
-            src={service.image}
-            alt={service.title}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
-          <div className="absolute bottom-5 left-5 right-5 flex flex-wrap gap-2">
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm">
-              {service.category}
+      {/* Content */}
+      <div className="p-8">
+
+        {/* Category */}
+        <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+          {service.category?.name || "Service"}
+        </span>
+
+        {/* Title */}
+        <h1 className="mt-4 text-4xl font-bold text-gray-900">
+          {service.title}
+        </h1>
+
+        {/* Meta */}
+        <div className="mt-5 flex flex-wrap items-center gap-6 text-gray-600">
+
+          {/* Rating */}
+          <div className="flex items-center gap-2">
+            <Star
+              size={18}
+              className="fill-yellow-400 text-yellow-400"
+            />
+
+            <span className="font-medium">
+              {service.rating ?? 0}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-              <BadgeCheck size={13} />
-              Verified service
+
+            <span>
+              ({service.reviewCount ?? 0} Reviews)
             </span>
           </div>
+
+          {/* Service Type */}
+          <div className="flex items-center gap-2">
+            <MapPin
+              size={18}
+              className="text-blue-600"
+            />
+
+            <span>
+              {service.serviceType === "onsite"
+                ? "On-site Service"
+                : "Online Service"}
+            </span>
+          </div>
+
         </div>
 
-        <div className="flex flex-col justify-between p-6 sm:p-8">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-              Book trusted professionals
-            </p>
-            <h1 className="mt-3 text-3xl font-bold leading-tight text-slate-950 sm:text-4xl">
-              {service.title}
-            </h1>
-            <p className="mt-4 line-clamp-3 leading-7 text-slate-600">
-              {service.description}
-            </p>
-          </div>
+        {/* Description */}
+        <p className="mt-5 max-w-3xl leading-7 text-gray-600">
+          {service.description}
+        </p>
 
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-slate-200 p-4">
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <Star size={16} className="fill-amber-400 text-amber-400" />
-                Rating
-              </div>
-              <p className="mt-2 text-xl font-bold text-slate-950">
-                {service.rating}{" "}
-                <span className="text-sm font-medium text-slate-500">
-                  ({service.reviews} reviews)
-                </span>
-              </p>
-            </div>
-            <div className="rounded-lg border border-slate-200 p-4">
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <Clock3 size={16} className="text-blue-600" />
-                Duration
-              </div>
-              <p className="mt-2 text-xl font-bold text-slate-950">
-                {service.duration}
-              </p>
-            </div>
-            <div className="rounded-lg border border-slate-200 p-4">
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <MapPin size={16} className="text-blue-600" />
-                Location
-              </div>
-              <p className="mt-2 text-xl font-bold text-slate-950">
-                {service.location}
-              </p>
-            </div>
-            <div className="rounded-lg border border-slate-200 p-4">
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <ShieldCheck size={16} className="text-emerald-600" />
-                Starting from
-              </div>
-              <p className="mt-2 text-xl font-bold text-slate-950">
-                Rs. {service.price}
-              </p>
-            </div>
-          </div>
+        {/* Price */}
+        <div className="mt-8">
+
+          <p className="text-sm text-gray-500">
+            Starting From
+          </p>
+
+          <h2 className="mt-2 text-3xl font-bold text-blue-600">
+            {service.currency === "INR" ? "₹" : service.currency}{" "}
+            {service.price}
+          </h2>
+
         </div>
+
       </div>
     </section>
   );

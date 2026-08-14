@@ -2,15 +2,17 @@ import { Link } from "react-router-dom";
 import { Star, MapPin } from "lucide-react";
 
 const ServiceCard = ({ service }) => {
+  const image = service.images?.[0] || "/placeholder-service.jpg";
+
   return (
     <Link
-      to={`/services/${service.id}`}
+      to={`/services/${service._id}`}
       className="block overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
       {/* Image */}
-      <div className="h-52 overflow-hidden">
+      <div className="h-52 overflow-hidden bg-gray-100">
         <img
-          src={service.image}
+          src={image}
           alt={service.title}
           className="h-full w-full object-cover transition duration-500 hover:scale-110"
         />
@@ -18,9 +20,10 @@ const ServiceCard = ({ service }) => {
 
       {/* Content */}
       <div className="p-5">
+
         {/* Category */}
         <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-600">
-          {service.category}
+          {service.category?.name}
         </span>
 
         {/* Title */}
@@ -30,30 +33,43 @@ const ServiceCard = ({ service }) => {
 
         {/* Provider */}
         <p className="mt-1 text-sm text-gray-500">
-          by by {service.provider?.name}
+          by {service.provider?.businessName || "Unknown Provider"}
         </p>
 
         {/* Rating */}
         <div className="mt-4 flex items-center justify-between">
+
           <div className="flex items-center gap-1">
             <Star
               size={16}
               className="fill-yellow-400 text-yellow-400"
             />
-            <span className="font-medium">{service.rating}</span>
+
+            <span className="font-medium">
+              {service.rating ?? 0}
+            </span>
+
             <span className="text-sm text-gray-500">
-              ({service.reviews})
+              ({service.reviewCount ?? 0})
             </span>
           </div>
 
+          {/* Location */}
           <div className="flex items-center gap-1 text-sm text-gray-500">
             <MapPin size={15} />
-            {service.location}
+
+            <span>
+              {service.serviceType === "onsite"
+                ? "On-site"
+                : "Online"}
+            </span>
           </div>
+
         </div>
 
         {/* Price */}
         <div className="mt-5 flex items-center justify-between">
+
           <div>
             <span className="text-2xl font-bold text-gray-900">
               ₹{service.price}
@@ -68,6 +84,7 @@ const ServiceCard = ({ service }) => {
           <span className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700">
             View Details
           </span>
+
         </div>
       </div>
     </Link>
