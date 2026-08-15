@@ -3,15 +3,18 @@ const ProviderPagination = ({
   totalPages = 1,
   onPageChange = () => {},
 }) => {
-  if (totalPages <= 1) return null;
+
+  if (totalPages <= 1) {
+    return null;
+  }
 
   return (
-    <section className="flex items-center justify-center gap-3 py-12">
+    <div className="flex items-center justify-center gap-2 pt-6">
 
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
-        className="rounded-xl border border-gray-300 px-5 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Previous
       </button>
@@ -24,10 +27,10 @@ const ProviderPagination = ({
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`h-11 w-11 rounded-xl font-semibold transition ${
+            className={`h-10 w-10 rounded-lg text-sm font-semibold transition ${
               currentPage === page
-                ? "bg-blue-600 text-white"
-                : "border border-gray-300 hover:bg-gray-100"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
             {page}
@@ -38,12 +41,12 @@ const ProviderPagination = ({
       <button
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
-        className="rounded-xl border border-gray-300 px-5 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Next
       </button>
 
-    </section>
+    </div>
   );
 };
 
