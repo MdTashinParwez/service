@@ -3,14 +3,17 @@ const ProviderPagination = ({
   totalPages = 1,
   onPageChange = () => {},
 }) => {
+  if (totalPages <= 1) return null;
 
-  if (totalPages <= 1) {
-    return null;
-  }
+  const pages = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
 
   return (
-    <div className="flex items-center justify-center gap-2 pt-6">
-
+    <div className="mt-10 flex items-center justify-center gap-2">
+      
+      {/* Previous */}
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -19,25 +22,22 @@ const ProviderPagination = ({
         Previous
       </button>
 
-      {Array.from({ length: totalPages }).map((_, index) => {
+      {/* Page Numbers */}
+      {pages.map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`h-10 min-w-10 rounded-lg px-3 text-sm font-semibold transition ${
+            currentPage === page
+              ? "bg-blue-600 text-white shadow-sm"
+              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
 
-        const page = index + 1;
-
-        return (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`h-10 w-10 rounded-lg text-sm font-semibold transition ${
-              currentPage === page
-                ? "bg-blue-600 text-white shadow-sm"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            {page}
-          </button>
-        );
-      })}
-
+      {/* Next */}
       <button
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}

@@ -137,7 +137,7 @@ const ProvidersPage = () => {
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
-                className="h-[390px] animate-pulse rounded-2xl bg-white"
+                className="'h-[390px]' animate-pulse rounded-2xl bg-white"
               />
             ))}
 
