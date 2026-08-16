@@ -24,7 +24,7 @@ const ProviderProfileCard = ({ provider }) => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <Link
-                to={`/providers/${provider._id}`}
+                to={`/provider/${provider._id}`}
                 className="truncate text-lg font-bold text-slate-950 transition hover:text-blue-600"
               >
                 {provider.businessName || "Unknown Provider"}
