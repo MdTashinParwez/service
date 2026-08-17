@@ -6,73 +6,79 @@ import {
 } from "lucide-react";
 
 const BookingSummary = ({ service = {} }) => {
-  return (
-    <aside className="rounded-2xl border bg-white p-8 shadow-sm">
+  const location =
+    typeof service.provider?.location === "string"
+      ? service.provider.location
+      : typeof service.location === "string"
+      ? service.location
+      : "Location available after booking";
 
-      <h2 className="text-2xl font-bold text-gray-900">
+  return (
+    <aside className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+      <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+        Your Service
+      </p>
+
+      <h2 className="mt-2 text-2xl font-bold text-gray-900">
         Booking Summary
       </h2>
 
       <div className="mt-6 space-y-5">
 
+        {/* Service */}
         <div>
-
           <p className="text-sm text-gray-500">
             Service
           </p>
 
-          <h3 className="mt-1 text-lg font-semibold">
-            {service.title || "AC Repair Service"}
+          <h3 className="mt-1 text-lg font-semibold text-gray-900">
+            {service.title || "Service"}
           </h3>
-
         </div>
 
+        {/* Provider */}
         <div>
-
           <p className="text-sm text-gray-500">
             Provider
           </p>
 
-          <h3 className="mt-1 text-lg font-semibold">
-            {service.provider?.name || "Rahul Sharma"}
+          <h3 className="mt-1 text-lg font-semibold text-gray-900">
+            {service.provider?.businessName || "Service Provider"}
           </h3>
-
         </div>
 
-        <div className="flex items-center gap-2 text-gray-600">
-
+        {/* Location */}
+        <div className="flex items-center gap-3 text-gray-600">
           <MapPin
             size={18}
-            className="text-blue-600"
+            className="shrink-0 text-blue-600"
           />
 
           <span>
-            {service.location || "New Delhi"}
+            {location}
           </span>
-
         </div>
 
-        <div className="flex items-center gap-2 text-gray-600">
-
+        {/* Category */}
+        <div className="flex items-center gap-3 text-gray-600">
           <Wrench
             size={18}
-            className="text-blue-600"
+            className="shrink-0 text-blue-600"
           />
 
           <span>
-            {service.category || "Home Services"}
+            {service.category?.name || "Professional Service"}
           </span>
-
         </div>
 
       </div>
 
-      <hr className="my-8" />
+      <hr className="my-6" />
 
-      <div className="space-y-4">
+      <div className="space-y-4 text-sm">
 
         <div className="flex items-center gap-3">
-
           <BadgeCheck
             size={18}
             className="text-green-600"
@@ -81,11 +87,9 @@ const BookingSummary = ({ service = {} }) => {
           <span>
             Verified Provider
           </span>
-
         </div>
 
         <div className="flex items-center gap-3">
-
           <ShieldCheck
             size={18}
             className="text-blue-600"
@@ -94,20 +98,6 @@ const BookingSummary = ({ service = {} }) => {
           <span>
             Secure Booking
           </span>
-
-        </div>
-
-        <div className="flex items-center gap-3">
-
-          <BadgeCheck
-            size={18}
-            className="text-green-600"
-          />
-
-          <span>
-            Instant Confirmation
-          </span>
-
         </div>
 
       </div>

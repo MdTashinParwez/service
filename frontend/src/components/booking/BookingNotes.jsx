@@ -2,47 +2,35 @@ const BookingNotes = ({
   formData,
   setFormData,
 }) => {
-
   const handleChange = (e) => {
-
-    const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      customerNotes: e.target.value,
     }));
-
   };
 
   return (
+    <section className="rounded-2xl border bg-white p-6 shadow-sm">
 
-    <section className="rounded-2xl border bg-white p-8 shadow-sm">
-
-      <h2 className="text-2xl font-bold text-gray-900">
-        Special Instructions
-      </h2>
-
-      <p className="mt-2 text-gray-600">
-        Add any extra instructions for the provider.
+      <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+        Additional Information
       </p>
 
-      <div className="mt-8">
+      <h2 className="mt-2 text-2xl font-bold text-gray-900">
+        Notes for Provider
+      </h2>
 
-        <textarea
-          rows={5}
-          name="note"
-          value={formData.note}
-          onChange={handleChange}
-          placeholder="Any specific requirements..."
-          className="w-full rounded-xl border border-gray-300 p-4 outline-none focus:border-blue-600"
-        />
-
-      </div>
+      <textarea
+        name="customerNotes"
+        value={formData.customerNotes}
+        onChange={handleChange}
+        rows={5}
+        placeholder="Tell the provider anything they should know..."
+        className="mt-5 w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      />
 
     </section>
-
   );
-
 };
 
 export default BookingNotes;

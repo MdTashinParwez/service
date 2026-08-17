@@ -75,7 +75,7 @@ const ProviderProfileCard = ({ provider }) => {
         </div>
 
         <Link
-          to={`/providers/${provider._id}`}
+          to={`/provider/${provider._id}`}
           className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 transition hover:border-blue-200 hover:text-blue-700"
         >
           View provider profile

@@ -1,30 +1,18 @@
-import CustomerDetails from "../../components/booking/CustomerDetails";
-import BookingAddress from "../../components/booking/BookingAddress";
 import BookingDateTime from "../../components/booking/BookingDateTime";
 import BookingNotes from "../../components/booking/BookingNotes";
 
 const BookingForm = ({
   formData,
   setFormData,
+  service,
 }) => {
-
   return (
-
-    <div className="space-y-8">
-
-      <CustomerDetails
-        formData={formData}
-        setFormData={setFormData}
-      />
-
-      <BookingAddress
-        formData={formData}
-        setFormData={setFormData}
-      />
+    <div className="space-y-6">
 
       <BookingDateTime
         formData={formData}
         setFormData={setFormData}
+        service={service}
       />
 
       <BookingNotes
@@ -33,9 +21,7 @@ const BookingForm = ({
       />
 
     </div>
-
   );
-
 };
 
 export default BookingForm;
