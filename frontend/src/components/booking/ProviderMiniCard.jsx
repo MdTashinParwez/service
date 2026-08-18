@@ -1,8 +1,7 @@
 import {
-  Phone,
   MapPin,
-  Star,
   User,
+  BadgeCheck,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
@@ -17,90 +16,40 @@ const ProviderMiniCard = ({ booking }) => {
 
       <div className="mt-8 flex flex-col items-center text-center">
 
-        <img
-          src={
-            booking.providerImage ||
-            "https://images.unsplash.com/photo-1500648767791-00dcc994a43f?w=300&q=80"
-          }
-          alt={booking.provider}
-          className="h-28 w-28 rounded-full border-4 border-blue-100 object-cover"
-        />
+        <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-blue-100 bg-gray-100">
+          <User size={48} className="text-gray-400" />
+        </div>
 
-        <h3 className="mt-5 text-xl font-bold">
-          {booking.provider}
-        </h3>
+        <div className="mt-5 flex items-center gap-2">
 
-        <p className="mt-1 text-gray-600">
-          {booking.profession || "Service Professional"}
+          <h3 className="text-xl font-bold">
+            {booking.provider.businessName}
+          </h3>
+
+          {booking.provider.isVerified && (
+            <BadgeCheck
+              size={20}
+              className="text-blue-600"
+            />
+          )}
+
+        </div>
+
+        <p className="mt-2 text-gray-600">
+          Service Provider
         </p>
 
-        <div className="mt-2 flex items-center gap-2 text-gray-500">
-
-          <MapPin
-            size={16}
-            className="text-blue-600"
-          />
-
-          <span>
-            {booking.providerLocation}
-          </span>
-
-        </div>
-
       </div>
 
-      <div className="mt-8 space-y-5">
-
-        <div className="flex items-center gap-3">
-
-          <Star
-            size={18}
-            className="fill-yellow-400 text-yellow-400"
-          />
-
-          <span>
-            {booking.rating || "4.8"} Rating
-          </span>
-
-        </div>
-
-        <div className="flex items-center gap-3">
-
-          <Phone
-            size={18}
-            className="text-blue-600"
-          />
-
-          <span>
-            {booking.phone}
-          </span>
-
-        </div>
-
-      </div>
-
-      <div className="mt-8 space-y-3">
-
-        <a
-          href={`tel:${booking.phone}`}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
-        >
-
-          <Phone size={18} />
-
-          Call Provider
-
-        </a>
+      <div className="mt-8">
 
         <Link
-          to={`/provider/${booking.providerId}`}
+          to={`/provider/${booking.provider._id}`}
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 py-3 font-semibold transition hover:bg-gray-100"
         >
-
           <User size={18} />
 
           View Profile
-
         </Link>
 
       </div>

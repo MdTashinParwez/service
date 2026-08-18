@@ -9,3 +9,9 @@ export const createBooking = async (bookingData) => {
     body: JSON.stringify(bookingData),
   });
 };
+
+export const getBookingById = async (bookingId) => {
+  return await apiClient(`/booking/${bookingId}`, {
+    method: "GET",
+  });
+};

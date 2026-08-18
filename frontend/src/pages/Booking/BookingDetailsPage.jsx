@@ -1,49 +1,51 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import BookingInfo from "../../components/booking/BookingInfo";
 import BookingTimeline from "../../components/booking/BookingTimeline";
 import ProviderMiniCard from "../../components/booking/ProviderMiniCard";
 import CancelBookingCard from "../../components/booking/CancelBookingCard";
 import BookingStatusBadge from "../../components/booking/BookingStatusBadge";
 
-const booking = {
-  id: "BK102345",
-
-  service: "AC Repair",
-
-  provider: "Rahul Sharma",
-
-  providerId: "1",
-
-  providerImage: "https://placehold.co/150",
-
-  profession: "AC Technician",
-
-  providerLocation: "New Delhi",
-
-  rating: 4.8,
-
-  phone: "+91 9876543210",
-
-  address: "House 24, Lajpat Nagar, New Delhi",
-
-  bookingDate: "12 Aug 2026",
-
-  bookingTime: "10:30 AM",
-
-  status: "Pending",
-
-  note: "Please call before arriving.",
-
-  price: 799,
-};
+import { getBookingById } from "../../api/booking.Api";
 
 const BookingDetailsPage = () => {
+  const { bookingId } = useParams();
+
+  const [booking, setBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBooking = async () => {
+      try {
+        const response = await getBookingById(bookingId);
+
+        setBooking(response.data);
+      } catch (error) {
+        console.error("Failed to fetch booking:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooking();
+  }, [bookingId]);
+
+  if (loading) {
+    return <div>Loading booking...</div>;
+  }
+
+  if (!booking) {
+    return <div>Booking not found.</div>;
+  }
+  console.log("BOOKING:", booking);  // dev
+ 
   return (
     <main className="min-h-screen bg-gray-50">
 
       {/* Hero */}
 
       <section className="border-b bg-white">
-
         <div className="mx-auto max-w-7xl px-6 py-10">
 
           <h1 className="text-4xl font-bold">
@@ -53,7 +55,7 @@ const BookingDetailsPage = () => {
           <div className="mt-4 flex items-center gap-4">
 
             <p className="text-gray-600">
-              Booking ID : {booking.id}
+              Booking ID : {booking._id}
             </p>
 
             <BookingStatusBadge
@@ -63,7 +65,6 @@ const BookingDetailsPage = () => {
           </div>
 
         </div>
-
       </section>
 
       {/* Content */}
@@ -76,13 +77,9 @@ const BookingDetailsPage = () => {
 
           <div className="space-y-8">
 
-            <BookingInfo
-              booking={booking}
-            />
+            <BookingInfo booking={booking} />
 
-            <BookingTimeline
-              booking={booking}
-            />
+            <BookingTimeline booking={booking} />
 
           </div>
 
@@ -90,14 +87,10 @@ const BookingDetailsPage = () => {
 
           <div className="space-y-8">
 
-            <ProviderMiniCard
-              booking={booking}
-            />
+            <ProviderMiniCard booking={booking} />
 
             {booking.status === "Pending" && (
-              <CancelBookingCard
-                booking={booking}
-              />
+              <CancelBookingCard booking={booking} />
             )}
 
           </div>
