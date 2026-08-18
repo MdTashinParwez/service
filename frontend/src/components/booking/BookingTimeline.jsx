@@ -1,149 +1,232 @@
 import {
   CheckCircle2,
-  Circle,
+  Clock3,
+  Loader2,
   XCircle,
 } from "lucide-react";
 
 const BookingTimeline = ({ booking }) => {
-
   const steps = [
     {
-      key: "pending",
-      label: "Booking Requested",
+      status: "pending",
+      title: "Booking Requested",
+      description:
+        "Your booking request has been sent to the provider.",
     },
     {
-      key: "accepted",
-      label: "Booking Accepted",
+      status: "accepted",
+      title: "Booking Accepted",
+      description:
+        "The provider has accepted your booking request.",
     },
     {
-      key: "in-progress",
-      label: "Service In Progress",
+      status: "in-progress",
+      title: "Service in Progress",
+      description:
+        "The provider is currently working on your service.",
     },
     {
-      key: "completed",
-      label: "Completed",
+      status: "completed",
+      title: "Service Completed",
+      description:
+        "Your service has been successfully completed.",
     },
   ];
 
-  const statusIndex = {
+  const statusOrder = {
     pending: 0,
     accepted: 1,
     "in-progress": 2,
     completed: 3,
   };
 
-  const current = statusIndex[booking.status];
+  const currentIndex = statusOrder[booking.status];
 
-  // Cancelled booking
-  if (booking.status === "cancelled") {
-    return (
-      <section className="rounded-2xl border bg-white p-8 shadow-sm">
+  const isCancelled = booking.status === "cancelled";
 
-        <h2 className="text-2xl font-bold text-gray-900">
+  return (
+    <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+
+      {/* Header */}
+
+      <div>
+
+        <p className="text-sm font-medium text-blue-600">
+          Booking Progress
+        </p>
+
+        <h2 className="mt-1 text-2xl font-bold text-gray-900">
           Booking Timeline
         </h2>
 
-        <p className="mt-2 text-gray-600">
-          Track your booking progress.
+        <p className="mt-2 text-sm text-gray-500">
+          Track the progress of your service booking.
         </p>
 
-        <div className="mt-8 flex items-center gap-4 rounded-xl bg-red-50 p-5">
+      </div>
 
-          <XCircle
-            size={28}
-            className="text-red-600"
-          />
+      {/* Cancelled */}
 
-          <div>
-            <h3 className="font-semibold text-red-700">
-              Booking Cancelled
-            </h3>
+      {isCancelled ? (
 
-            <p className="mt-1 text-sm text-red-600">
-              This booking is no longer active.
-            </p>
+        <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-5">
+
+          <div className="flex items-start gap-4">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100">
+
+              <XCircle
+                size={24}
+                className="text-red-600"
+              />
+
+            </div>
+
+            <div>
+
+              <h3 className="font-bold text-red-900">
+                Booking Cancelled
+              </h3>
+
+              <p className="mt-1 text-sm leading-6 text-red-700">
+                This booking has been cancelled and
+                will not proceed further.
+              </p>
+
+              {booking.cancellationReason && (
+                <div className="mt-3">
+
+                  <p className="text-xs font-semibold uppercase tracking-wide text-red-600">
+                    Reason
+                  </p>
+
+                  <p className="mt-1 text-sm text-red-800">
+                    {booking.cancellationReason}
+                  </p>
+
+                </div>
+              )}
+
+            </div>
+
           </div>
 
         </div>
 
-      </section>
-    );
-  }
+      ) : (
 
-  return (
-    <section className="rounded-2xl border bg-white p-8 shadow-sm">
+        /* Normal Timeline */
 
-      <h2 className="text-2xl font-bold text-gray-900">
-        Booking Timeline
-      </h2>
+        <div className="mt-8">
 
-      <p className="mt-2 text-gray-600">
-        Track your booking progress.
-      </p>
+          {steps.map((step, index) => {
 
-      <div className="mt-8 space-y-6">
+            const stepIndex = statusOrder[step.status];
 
-        {steps.map((step, index) => {
+            const completed =
+              currentIndex >= stepIndex;
 
-          const completed = index <= current;
+            const active =
+              booking.status === step.status;
 
-          return (
-            <div
-              key={step.key}
-              className="flex items-start gap-4"
-            >
+            const isLast =
+              index === steps.length - 1;
 
-              <div className="flex flex-col items-center">
+            return (
+              <div
+                key={step.status}
+                className="relative flex gap-4"
+              >
 
-                {completed ? (
-                  <CheckCircle2
-                    size={24}
-                    className="text-green-600"
-                  />
-                ) : (
-                  <Circle
-                    size={24}
-                    className="text-gray-300"
-                  />
-                )}
+                {/* Icon + Line */}
 
-                {index !== steps.length - 1 && (
+                <div className="flex flex-col items-center">
+
                   <div
-                    className={`mt-2 h-10 w-[2px] ${
-                      index < current
-                        ? "bg-green-500"
-                        : "bg-gray-200"
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+                      completed
+                        ? "bg-green-100"
+                        : "bg-gray-100"
                     }`}
-                  />
-                )}
+                  >
 
-              </div>
+                    {completed ? (
 
-              <div>
+                      <CheckCircle2
+                        size={21}
+                        className="text-green-600"
+                      />
 
-                <h3
-                  className={`font-semibold ${
-                    completed
-                      ? "text-gray-900"
-                      : "text-gray-400"
+                    ) : (
+
+                      <Clock3
+                        size={20}
+                        className="text-gray-400"
+                      />
+
+                    )}
+
+                  </div>
+
+                  {!isLast && (
+                    <div
+                      className={`my-2 h-12 w-[2px] ${
+                        currentIndex > stepIndex
+                          ? "bg-green-500"
+                          : "bg-gray-200"
+                      }`}
+                    />
+                  )}
+
+                </div>
+
+                {/* Content */}
+
+                <div
+                  className={`pb-8 ${
+                    isLast ? "pb-0" : ""
                   }`}
                 >
-                  {step.label}
-                </h3>
 
-                <p className="mt-1 text-sm text-gray-500">
-                  {completed
-                    ? "Completed"
-                    : "Waiting..."}
-                </p>
+                  <div className="flex flex-wrap items-center gap-2">
+
+                    <h3
+                      className={`font-semibold ${
+                        completed
+                          ? "text-gray-900"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {step.title}
+                    </h3>
+
+                    {active && (
+                      <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                        Current
+                      </span>
+                    )}
+
+                  </div>
+
+                  <p
+                    className={`mt-1 text-sm leading-6 ${
+                      completed
+                        ? "text-gray-600"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {step.description}
+                  </p>
+
+                </div>
 
               </div>
+            );
+          })}
 
-            </div>
-          );
-        })}
+        </div>
 
-      </div>
+      )}
 
     </section>
   );
