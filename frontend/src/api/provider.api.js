@@ -35,3 +35,13 @@ export const getCurrentProvider = async () => {
     method: "GET",
   });
 };
+
+
+// Create Provider
+
+export const createProvider = async (formData) => {
+  return apiClient("/providers", {
+    method: "POST",
+    body: formData,
+  });
+};
