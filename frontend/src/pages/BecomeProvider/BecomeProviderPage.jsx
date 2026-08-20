@@ -1,184 +1,178 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import ProgressBar from "../../components/become-provider/ProgressBar";
-import BasicInformation from "../../components/become-provider/BasicInformation";
-import ProfessionalInformation from "../../components/become-provider/ProfessionalInformation";
-import ServicesInformation from "../../components/become-provider/ServicesInformation";
-import DocumentsInformation from "../../components/become-provider/DocumentsInformation";
-import AvailabilityInformation from "../../components/become-provider/AvailabilityInformation";
-import ReviewInformation from "../../components/become-provider/ReviewInformation";
-import SuccessInformation from "../../components/become-provider/SuccessInformation";
+import {
+  getProviderStatus,
+  createProvider,
+} from "../../api/provider.api";
+
+import ProviderApplicationForm from "../../components/become-provider/ProviderApplicationForm";
+import ProviderStatus from "../../components/become-provider/ProviderStatus";
+import ProviderStatusLoader from "../../components/become-provider/ProviderStatusLoader";
 
 const BecomeProviderPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [provider, setProvider] = useState(null);
+  const [error, setError] = useState("");
 
-  const [step, setStep] = useState(1);
+  // =====================================================
+  // CHECK PROVIDER STATUS
+  // =====================================================
 
-  const [formData, setFormData] = useState({
+  useEffect(() => {
+    const checkProviderStatus = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    // Basic
+        const response = await getProviderStatus();
 
-    fullName: "",
-    email: "",
-    phone: "",
-    city: "",
+        /*
+          Expected response:
 
-    // Professional
+          {
+            data: {
+              provider: {...}
+            }
+          }
 
-    businessName: "",
-    profession: "",
-    category: "",
-    experience: "",
-    about: "",
-    skills: [],
+          Agar provider nahi hai to API 404 de sakti hai.
+        */
 
-    // Services
+        setProvider(response?.data?.provider || null);
+      } catch (error) {
+        /*
+          404 ka matlab:
+          User abhi provider nahi hai.
 
-    services: [
-      {
-        title: "",
-        price: "",
-        description: "",
-      },
-    ],
+          Is case mein form show hoga.
+        */
 
-    // Documents
+        if (error?.response?.status === 404) {
+          setProvider(null);
+        } else {
+          console.error(
+            "Provider status check failed:",
+            error
+          );
 
-    profilePhoto: null,
-    governmentId: null,
-    addressProof: null,
+          setError(
+            error?.response?.data?.message ||
+              "Unable to check provider status."
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Availability
+    checkProviderStatus();
+  }, []);
 
-    workingDays: [],
-    startTime: "",
-    endTime: "",
+  // =====================================================
+  // CREATE PROVIDER
+  // =====================================================
 
-  });
+  const handleCreateProvider = async (formData) => {
+    try {
+      setError("");
 
-  const nextStep = () => {
+      /*
+        FormData already ProviderApplicationForm
+        se milega.
+      */
 
-    if (step < 7) {
-      setStep((prev) => prev + 1);
+      const response = await createProvider(formData);
+
+      /*
+        Provider create hone ke baad
+        immediately pending state show karenge.
+      */
+
+      const createdProvider =
+        response?.data?.provider;
+
+      setProvider(createdProvider || {
+        isApproved: false,
+        isVerified: false,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      console.error(
+        "Provider creation failed:",
+        error
+      );
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to submit provider application.";
+
+      setError(message);
+
+      return {
+        success: false,
+        message,
+      };
     }
-
   };
 
-  const prevStep = () => {
+  // =====================================================
+  // LOADING
+  // =====================================================
 
-    if (step > 1) {
-      setStep((prev) => prev - 1);
-    }
+  if (loading) {
+    return <ProviderStatusLoader />;
+  }
 
-  };
+  // =====================================================
+  // STATUS ERROR
+  // =====================================================
 
-  const handleSubmit = () => {
+  if (error && !provider) {
+    return (
+      <main className="min-h-screen bg-gray-50 px-4 py-12">
+        <div className="mx-auto max-w-2xl">
+          <div className="rounded-3xl border border-red-200 bg-white p-8 shadow-sm">
+            <h1 className="text-xl font-bold text-gray-900">
+              Something went wrong
+            </h1>
 
-    console.log(formData);
+            <p className="mt-2 text-sm leading-6 text-red-600">
+              {error}
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
-    setStep(7);
+  // =====================================================
+  // PROVIDER ALREADY EXISTS
+  // =====================================================
 
-  };
+  if (provider) {
+    return (
+      <ProviderStatus
+        provider={provider}
+      />
+    );
+  }
+
+  // =====================================================
+  // USER IS NOT A PROVIDER
+  // SHOW APPLICATION FORM
+  // =====================================================
 
   return (
-
-    <main className="min-h-screen bg-gray-50">
-
-      {step <= 6 && (
-        <ProgressBar
-          step={step}
-          totalSteps={6}
-        />
-      )}
-
-      <section className="mx-auto max-w-5xl px-6 py-10">
-
-        {step === 1 && (
-          <BasicInformation
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
-
-        {step === 2 && (
-          <ProfessionalInformation
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
-
-        {step === 3 && (
-          <ServicesInformation
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
-
-        {step === 4 && (
-          <DocumentsInformation
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
-
-        {step === 5 && (
-          <AvailabilityInformation
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
-
-        {step === 6 && (
-          <ReviewInformation
-            formData={formData}
-          />
-        )}
-
-        {step === 7 && (
-          <SuccessInformation />
-        )}
-
-        {step <= 6 && (
-
-          <div className="mt-10 flex items-center justify-between">
-
-            <button
-              onClick={prevStep}
-              disabled={step === 1}
-              className="rounded-xl border border-gray-300 px-6 py-3 font-medium transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              ← Back
-            </button>
-
-            {step < 6 ? (
-
-              <button
-                onClick={nextStep}
-                className="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
-              >
-                Next →
-              </button>
-
-            ) : (
-
-              <button
-                onClick={handleSubmit}
-                className="rounded-xl bg-green-600 px-6 py-3 font-medium text-white transition hover:bg-green-700"
-              >
-                Submit Application
-              </button>
-
-            )}
-
-          </div>
-
-        )}
-
-      </section>
-
-    </main>
-
+    <ProviderApplicationForm
+      onSubmit={handleCreateProvider}
+      submitting={false}
+      error={error}
+    />
   );
-
 };
 
 export default BecomeProviderPage;

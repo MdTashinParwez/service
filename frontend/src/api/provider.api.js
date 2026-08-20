@@ -45,3 +45,9 @@ export const createProvider = async (formData) => {
     body: formData,
   });
 };
+
+export const getProviderStatus = async () => {
+  return apiClient("/providers/status", {
+    method: "GET",
+  });
+};

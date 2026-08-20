@@ -16,6 +16,7 @@ import BookingSuccessPage from "../pages/Booking/BookingSuccessPage";
 import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 import MyBookingsPage from "../pages/Booking/MyBookingsPage";
 import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
+import ProtectedRoute from "./protecdRoute";
 
 
 const router = createBrowserRouter([
@@ -75,7 +76,10 @@ const router = createBrowserRouter([
       },
       {
       path: "become-provider",
-      element: <BecomeProviderPage/>,
+      element:
+        <ProtectedRoute>
+       <BecomeProviderPage/>
+       </ProtectedRoute>
       },
       {
       path: "booking/:serviceId",
