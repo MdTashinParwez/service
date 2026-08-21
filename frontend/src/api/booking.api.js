@@ -37,3 +37,23 @@ export const cancelBooking = async (bookingId, cancellationReason) => {
   });
 };
 
+
+// provider Booking
+export const getProviderBookings = async (
+  page = 1,
+  limit = 5,
+  status = ""
+) => {
+  const params = new URLSearchParams({
+    page,
+    limit,
+  });
+
+  if (status) {
+    params.append("status", status);
+  }
+
+  return apiClient(`/booking/provider?${params.toString()}`, {
+    method: "GET",
+  });
+};
