@@ -17,7 +17,7 @@ import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 import MyBookingsPage from "../pages/Booking/MyBookingsPage";
 import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
 import ProtectedRoute from "./protecdRoute";
-import ProviderDashboard from "../pages/dashboard/ProviderDashboard";
+import ProviderDashboard from "../pages/Dashboard/ProviderDashboard";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -60,6 +60,8 @@ const router = createBrowserRouter([
         path:"about",
         element: <AboutPage/>
       },
+      
+      
       {
         path: "provider",
         element:<ProviderPage/>
@@ -96,15 +98,15 @@ const router = createBrowserRouter([
       path: "bookings/:bookingId",
       element: <BookingDetailsPage/>,
       },
-     {
-      path: "provider/dashboard",
-      element: (
-        <ProtectedRoute>
-          <ProviderDashboard />
-        </ProtectedRoute>
-      ),
-    },
-      
+       {
+        path: "provider/dashboard",
+        element: (
+          <ProtectedRoute>
+            <ProviderDashboard />
+          </ProtectedRoute>
+        )
+      },
+    
 
 
 
