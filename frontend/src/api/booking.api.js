@@ -57,3 +57,39 @@ export const getProviderBookings = async (
     method: "GET",
   });
 };
+
+// provider actions;
+
+
+export const acceptBooking = async (bookingId) => {
+  return await apiClient(`/booking/${bookingId}/accept`, {
+    method: "PATCH",
+  });
+};
+
+export const rejectBooking = async (
+  bookingId,
+  rejectionReason = ""
+) => {
+  return await apiClient(`/booking/${bookingId}/reject`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      rejectionReason,
+    }),
+  });
+};
+
+export const startBooking = async (bookingId) => {
+  return await apiClient(`/booking/${bookingId}/start`, {
+    method: "PATCH",
+  });
+};
+
+export const completeBooking = async (bookingId) => {
+  return await apiClient(`/booking/${bookingId}/complete`, {
+    method: "PATCH",
+  });
+};
