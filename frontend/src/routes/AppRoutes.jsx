@@ -18,6 +18,7 @@ import MyBookingsPage from "../pages/Booking/MyBookingsPage";
 import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
 import ProtectedRoute from "./protecdRoute";
 import ProviderDashboard from "../pages/Dashboard/ProviderDashboard";
+import ProviderBookingsPage from "../pages/Dashboard/ProviderBookingsPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -106,6 +107,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
+      {
+      path: "provider/bookings",
+      element: (
+        <ProtectedRoute>
+          <ProviderBookingsPage />
+        </ProtectedRoute>
+      ),
+    },
+
     
 
 
