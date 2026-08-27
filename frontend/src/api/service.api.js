@@ -20,28 +20,32 @@ export const getServiceById = async (id) => {
 };
 
 
-// export const getMyServices = async () => {
-//   return apiClient("/services/my-services", {
-//     method: "GET",
-//   });
-// };
 
-// export const createService = async (formData) => {
-//   return apiClient("/services", {
-//     method: "POST",
-//     body: formData,
-//   });
-// };
 
-// export const updateService = async (id, formData) => {
-//   return apiClient(`/services/${id}`, {
-//     method: "PATCH",
-//     body: formData,
-//   });
-// };
+// provider services
 
-// export const deleteService = async (id) => {
-//   return apiClient(`/services/${id}`, {
-//     method: "DELETE",
-//   });
-// };
+export const getMyServices = async () => {
+  return apiClient("/services/my-services", {
+    method: "GET",
+  });
+};
+
+export const createService = async (formData) => {
+  return apiClient("/services", {
+    method: "POST",
+    body: formData,
+  });
+};
+
+export const updateService = async (id, formData) => {
+  return apiClient(`/services/${id}`, {
+    method: "PATCH",
+    body: formData,
+  });
+};
+
+export const deleteService = async (id) => {
+  return apiClient(`/services/${id}`, {
+    method: "DELETE",
+  });
+};
