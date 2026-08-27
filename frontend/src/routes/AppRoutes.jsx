@@ -19,6 +19,9 @@ import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
 import ProtectedRoute from "./protecdRoute";
 import ProviderDashboard from "../pages/Dashboard/ProviderDashboard";
 import ProviderBookingsPage from "../pages/Dashboard/ProviderBookingsPage";
+import ProviderServicesPage from "../pages/Dashboard/ProviderServicesPage";
+import CreateServicePage from "../pages/Dashboard/CreateServicePage";
+import EditServicePage from "../pages/Dashboard/EditServicePage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -40,10 +43,7 @@ const router = createBrowserRouter([
         path: "signup",
         element: <SignupPage />,
       },
-      // {
-      //   path:"services",
-      //   element:<ServicesPage />
-      // },
+     
       {
         path: "services",
         children: [
@@ -112,6 +112,30 @@ const router = createBrowserRouter([
       element: (
         <ProtectedRoute>
           <ProviderBookingsPage />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "provider/services",
+      element: (
+        <ProtectedRoute>
+          <ProviderServicesPage />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "provider/services/create",
+      element: (
+        <ProtectedRoute>
+          <CreateServicePage />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "provider/services/:id/edit",
+      element: (
+        <ProtectedRoute>
+          <EditServicePage />
         </ProtectedRoute>
       ),
     },
