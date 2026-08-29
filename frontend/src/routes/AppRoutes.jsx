@@ -22,6 +22,7 @@ import ProviderBookingsPage from "../pages/Dashboard/ProviderBookingsPage";
 import ProviderServicesPage from "../pages/Dashboard/ProviderServicesPage";
 import CreateServicePage from "../pages/Dashboard/CreateServicePage";
 import EditServicePage from "../pages/Dashboard/EditServicePage";
+import ProviderProfile from "@/pages/Dashboard/ProviderProfile";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -136,6 +137,14 @@ const router = createBrowserRouter([
       element: (
         <ProtectedRoute>
           <EditServicePage />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "provider/profile",
+      element: (
+        <ProtectedRoute>
+          <ProviderProfile />
         </ProtectedRoute>
       ),
     },

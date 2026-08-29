@@ -28,3 +28,28 @@ export const logoutUser = async () => {
     method: "POST",
   });
 };
+
+export const updateProfileDetails = async (data) => {
+  return apiClient("/users/update-account", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
+export const updateUserAvatar = async (formData) => {
+  return apiClient("/users/avatar", {
+    method: "PATCH",
+    body: formData,
+  });
+};
+export const changeCurrentPassword = async (data) => {
+  return apiClient("/users/change-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
