@@ -23,6 +23,9 @@ import ProviderServicesPage from "../pages/Dashboard/ProviderServicesPage";
 import CreateServicePage from "../pages/Dashboard/CreateServicePage";
 import EditServicePage from "../pages/Dashboard/EditServicePage";
 import ProviderProfile from "@/pages/Dashboard/ProviderProfile";
+import UserProfile from "../pages/Profile/UserProfile";
+import ProviderNotifications from "../pages/Dashboard/ProviderNotifications";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -145,6 +148,22 @@ const router = createBrowserRouter([
       element: (
         <ProtectedRoute>
           <ProviderProfile />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/profile",
+      element: (
+        <ProtectedRoute>
+          <UserProfile />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/provider/notifications",
+      element: (
+        <ProtectedRoute>
+          <ProviderNotifications  />
         </ProtectedRoute>
       ),
     },
