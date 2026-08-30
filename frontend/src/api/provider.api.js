@@ -51,3 +51,20 @@ export const getProviderStatus = async () => {
     method: "GET",
   });
 };
+
+export const updateProviderDetail = async (data) => {
+  return apiClient("/providers/profile", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+export const updateProviderDocument = async (formData) => {
+  return apiClient("/providers/documents", {
+    method: "PATCH",
+    body: formData,
+  });
+};
