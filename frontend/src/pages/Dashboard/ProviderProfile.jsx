@@ -20,7 +20,7 @@ import { toast } from "sonner";
 
 import ProviderSidebar from "../../components/provider/ProviderSidebar";
 import ProviderNavbar from "../../components/provider/ProviderNavbar";
-import PersonalInformation from "../../components/profile/PersonalInformation";
+
 import {
   getCurrentUser,
   updateProfileDetails,
@@ -643,11 +643,6 @@ const ProviderProfile = () => {
                 </div>
               </div>
             </div>
-
-            {/* =====================================================
-                PERSONAL INFORMATION
-            ===================================================== */}
-
             <section className="mt-6 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
 
               <SectionHeader
@@ -758,7 +753,7 @@ const ProviderProfile = () => {
                   />
                 </div>
               )}
-            </section>
+            </section>  
 
             {/* =====================================================
                 BUSINESS INFORMATION
