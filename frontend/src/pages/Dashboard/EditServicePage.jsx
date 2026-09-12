@@ -1,13 +1,17 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import {
   ArrowLeft,
   BriefcaseBusiness,
+  Clock3,
   ImagePlus,
   Loader2,
   Save,
   X,
 } from "lucide-react";
+
 import { toast } from "sonner";
 
 import ProviderSidebar from "../../components/provider/ProviderSidebar";
@@ -31,23 +35,18 @@ const EditServicePage = () => {
     description: "",
     category: "",
     price: "",
-    duration: "",
+    hours: "0",
+    minutes: "0",
     serviceType: "online",
     location: "",
     tags: [],
     customFields: {},
   });
 
-  const [categories, setCategories] = useState([]);
-
   const [tagInput, setTagInput] = useState("");
 
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
-
-  // =========================================================
-  // FETCH SERVICE
-  // =========================================================
 
   useEffect(() => {
     const fetchService = async () => {
@@ -63,19 +62,35 @@ const EditServicePage = () => {
           throw new Error("Service not found");
         }
 
+        // Backend stores duration in minutes.
+        // Convert it into hours + minutes for UI.
+        const totalDuration = Number(service.duration) || 0;
+
+        const hours = Math.floor(totalDuration / 60);
+        const minutes = totalDuration % 60;
+
         setForm({
           title: service.title || "",
+
           description: service.description || "",
+
           category:
             typeof service.category === "object"
               ? service.category?._id || ""
               : service.category || "",
-          price: service.price ?? "",
-          duration: service.duration ?? "",
-          serviceType: service.serviceType || "online",
 
-          // IMPORTANT:
-          // location can be object OR string
+          price:
+            service.price !== undefined &&
+            service.price !== null
+              ? String(service.price)
+              : "",
+
+          hours: String(hours),
+          minutes: String(minutes),
+
+          serviceType:
+            service.serviceType || "online",
+
           location: service.location || "",
 
           tags: Array.isArray(service.tags)
@@ -118,7 +133,7 @@ const EditServicePage = () => {
   }, [id]);
 
   // =========================================================
-  // INPUT CHANGE
+  // GENERIC INPUT CHANGE
   // =========================================================
 
   const handleChange = (e) => {
@@ -130,9 +145,6 @@ const EditServicePage = () => {
     }));
   };
 
-  // =========================================================
-  // LOCATION CHANGE
-  // =========================================================
 
   const handleLocationChange = (e) => {
     const { name, value } = e.target;
@@ -153,10 +165,6 @@ const EditServicePage = () => {
       };
     });
   };
-
-  // =========================================================
-  // TAGS
-  // =========================================================
 
   const addTag = () => {
     const tag = tagInput.trim().toLowerCase();
@@ -192,12 +200,11 @@ const EditServicePage = () => {
     }
   };
 
-  // =========================================================
-  // IMAGE SELECTION
-  // =========================================================
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(
+      e.target.files || []
+    );
 
     if (!files.length) return;
 
@@ -206,7 +213,7 @@ const EditServicePage = () => {
       ...files,
     ]);
 
-    // allow selecting same file again
+    // Allow selecting same file again
     e.target.value = "";
   };
 
@@ -216,20 +223,13 @@ const EditServicePage = () => {
     );
   };
 
-  // =========================================================
-  // EXISTING IMAGE REMOVE
-  // =========================================================
-
   const removeExistingImage = (index) => {
     setExistingImages((current) =>
       current.filter((_, i) => i !== index)
     );
   };
 
-  // =========================================================
-  // LOCATION HELPER
-  // =========================================================
-
+ 
   const getLocationValue = () => {
     if (!form.location) {
       return "";
@@ -240,10 +240,7 @@ const EditServicePage = () => {
     }
 
     if (typeof form.location === "object") {
-      return (
-        form.location.address ||
-        ""
-      );
+      return form.location.address || "";
     }
 
     return "";
@@ -271,21 +268,23 @@ const EditServicePage = () => {
     return null;
   };
 
-  // =========================================================
-  // VALIDATION
-  // =========================================================
 
   const validateForm = () => {
+    
     if (!form.title?.trim()) {
       toast.error("Service title is required");
       return false;
     }
 
+   
     if (!form.description?.trim()) {
-      toast.error("Service description is required");
+      toast.error(
+        "Service description is required"
+      );
       return false;
     }
 
+   
     if (!form.category) {
       toast.error("Please select a category");
       return false;
@@ -293,21 +292,49 @@ const EditServicePage = () => {
 
     const price = Number(form.price);
 
-    if (!form.price || Number.isNaN(price) || price <= 0) {
+    if (
+      !form.price ||
+      Number.isNaN(price) ||
+      price <= 0
+    ) {
       toast.error("Please enter a valid price");
       return false;
     }
 
-    const duration = Number(form.duration);
+    // -------------------------------------------------------
+    // DURATION
+    // -------------------------------------------------------
 
-    if (
-      !form.duration ||
-      Number.isNaN(duration) ||
-      duration <= 0
-    ) {
-      toast.error("Please enter a valid duration");
+    const hours = Number(form.hours) || 0;
+    const minutes = Number(form.minutes) || 0;
+
+    if (hours < 0 || hours > 24) {
+      toast.error(
+        "Hours must be between 0 and 24"
+      );
       return false;
     }
+
+    if (minutes < 0 || minutes > 59) {
+      toast.error(
+        "Minutes must be between 0 and 59"
+      );
+      return false;
+    }
+
+    const totalDurationMinutes =
+      hours * 60 + minutes;
+
+    if (totalDurationMinutes <= 0) {
+      toast.error(
+        "Duration must be greater than 0"
+      );
+      return false;
+    }
+
+    // -------------------------------------------------------
+    // SERVICE TYPE
+    // -------------------------------------------------------
 
     const allowedTypes = [
       "online",
@@ -320,9 +347,9 @@ const EditServicePage = () => {
       return false;
     }
 
-    // =====================================================
-    // LOCATION VALIDATION
-    // =====================================================
+    // -------------------------------------------------------
+    // LOCATION
+    // -------------------------------------------------------
 
     if (
       form.serviceType === "onsite" ||
@@ -336,7 +363,9 @@ const EditServicePage = () => {
       }
 
       if (!location.address?.trim()) {
-        toast.error("Location address is required");
+        toast.error(
+          "Location address is required"
+        );
         return false;
       }
     }
@@ -381,15 +410,32 @@ const EditServicePage = () => {
         form.category
       );
 
+      // =====================================================
+      // PRICE
+      // =====================================================
+
       formData.append(
         "price",
         String(Number(form.price))
       );
 
+      // =====================================================
+      // DURATION
+      // Backend receives total duration in minutes
+      // =====================================================
+
+      const totalDurationMinutes =
+        (Number(form.hours) || 0) * 60 +
+        (Number(form.minutes) || 0);
+
       formData.append(
         "duration",
-        String(Number(form.duration))
+        String(totalDurationMinutes)
       );
+
+      // =====================================================
+      // SERVICE TYPE
+      // =====================================================
 
       formData.append(
         "serviceType",
@@ -411,7 +457,6 @@ const EditServicePage = () => {
           JSON.stringify(location)
         );
       } else {
-        // For online service send empty object/string
         formData.append(
           "location",
           JSON.stringify({})
@@ -551,7 +596,15 @@ const EditServicePage = () => {
                       "/provider/services"
                     )
                   }
-                  className="mt-6 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="
+                    mt-6 rounded-xl
+                    bg-blue-600
+                    px-5 py-2.5
+                    text-sm font-semibold
+                    text-white
+                    transition
+                    hover:bg-blue-700
+                  "
                 >
                   Back to Services
                 </button>
@@ -575,12 +628,13 @@ const EditServicePage = () => {
         <ProviderSidebar />
 
         <section className="min-w-0 flex-1 p-5 sm:p-6 lg:p-8">
-          {/* =================================================
-              HEADER
-          ================================================= */}
+          <div className="mx-auto w-full max-w-5xl">
 
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            {/* =================================================
+                HEADER
+            ================================================= */}
+
+            <div className="mb-8">
               <button
                 type="button"
                 onClick={() =>
@@ -588,7 +642,17 @@ const EditServicePage = () => {
                     "/provider/services"
                   )
                 }
-                className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-gray-900"
+                className="
+                  mb-4
+                  inline-flex
+                  items-center
+                  gap-2
+                  text-sm
+                  font-medium
+                  text-gray-500
+                  transition
+                  hover:text-gray-900
+                "
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to services
@@ -603,38 +667,39 @@ const EditServicePage = () => {
               </h1>
 
               <p className="mt-2 text-sm text-gray-500">
-                Update your service details and availability.
+                Update your service details, pricing,
+                duration and availability.
               </p>
             </div>
-          </div>
 
-          {/* =================================================
-              FORM
-          ================================================= */}
+            {/* =================================================
+                FORM
+            ================================================= */}
 
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto max-w-5xl"
-          >
-            <div className="space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+            >
+
               {/* =================================================
                   BASIC INFORMATION
               ================================================= */}
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-                <div className="mb-6">
+              <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 bg-gray-50/70 px-5 py-5 sm:px-6">
                   <h2 className="text-lg font-bold text-gray-900">
                     Basic Information
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Update the basic information about your service.
+                    Update the basic information about your
+                    service.
                   </p>
                 </div>
 
-                <div className="space-y-5">
-                  {/* TITLE */}
+                <div className="space-y-5 p-5 sm:p-6">
 
+                  {/* TITLE */}
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
                       Service Title
@@ -646,12 +711,23 @@ const EditServicePage = () => {
                       value={form.title}
                       onChange={handleChange}
                       placeholder="e.g. Professional Web Development"
-                      className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      disabled={submitting}
+                      className="
+                        h-11 w-full rounded-xl
+                        border border-gray-200
+                        bg-white px-4
+                        text-sm text-gray-900
+                        outline-none transition
+                        placeholder:text-gray-400
+                        focus:border-blue-500
+                        focus:ring-2 focus:ring-blue-100
+                        disabled:cursor-not-allowed
+                        disabled:bg-gray-50
+                      "
                     />
                   </div>
 
                   {/* DESCRIPTION */}
-
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
                       Description
@@ -663,12 +739,25 @@ const EditServicePage = () => {
                       onChange={handleChange}
                       rows={5}
                       placeholder="Describe your service..."
-                      className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      disabled={submitting}
+                      className="
+                        w-full resize-none
+                        rounded-xl
+                        border border-gray-200
+                        bg-white
+                        px-4 py-3
+                        text-sm text-gray-900
+                        outline-none transition
+                        placeholder:text-gray-400
+                        focus:border-blue-500
+                        focus:ring-2 focus:ring-blue-100
+                        disabled:cursor-not-allowed
+                        disabled:bg-gray-50
+                      "
                     />
                   </div>
 
                   {/* CATEGORY */}
-
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
                       Category
@@ -678,423 +767,771 @@ const EditServicePage = () => {
                       type="text"
                       value={form.category}
                       disabled
-                      className="h-11 w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm text-gray-500"
+                      className="
+                        h-11 w-full
+                        cursor-not-allowed
+                        rounded-xl
+                        border border-gray-200
+                        bg-gray-50
+                        px-4
+                        text-sm text-gray-500
+                      "
                     />
 
                     <p className="mt-1.5 text-xs text-gray-400">
-                      Category ID loaded from the existing service.
+                      Category is kept from the original
+                      service.
                     </p>
                   </div>
+                </div>
+              </section>
 
-                  {/* PRICE + DURATION */}
+              {/* =================================================
+                  PRICING & DURATION
+              ================================================= */}
 
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className="mb-2 block text-sm font-semibold text-gray-700">
-                        Price (₹)
-                      </label>
-
-                      <input
-                        type="number"
-                        name="price"
-                        min="1"
-                        value={form.price}
-                        onChange={handleChange}
-                        placeholder="1000"
-                        className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      />
+              <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 bg-gray-50/70 px-5 py-5 sm:px-6">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                      <Clock3 size={19} />
                     </div>
 
                     <div>
-                      <label className="mb-2 block text-sm font-semibold text-gray-700">
-                        Duration (minutes)
-                      </label>
+                      <h2 className="text-lg font-bold text-gray-900">
+                        Pricing & Duration
+                      </h2>
 
-                      <input
-                        type="number"
-                        name="duration"
-                        min="1"
-                        value={form.duration}
-                        onChange={handleChange}
-                        placeholder="60"
-                        className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      />
+                      <p className="mt-1 text-sm text-gray-500">
+                        Set the price and expected service
+                        duration.
+                      </p>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                <div className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6">
+
+                  {/* PRICE */}
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                      Price (₹)
+                    </label>
+
+                    <input
+                      type="number"
+                      name="price"
+                      min="1"
+                      step="1"
+                      value={form.price}
+                      onChange={handleChange}
+                      placeholder="1000"
+                      disabled={submitting}
+                      className="
+                        h-11 w-full rounded-xl
+                        border border-gray-200
+                        bg-white px-4
+                        text-sm text-gray-900
+                        outline-none transition
+                        placeholder:text-gray-400
+                        focus:border-blue-500
+                        focus:ring-2 focus:ring-blue-100
+                        disabled:cursor-not-allowed
+                        disabled:bg-gray-50
+                      "
+                    />
+                  </div>
+
+                  {/* DURATION */}
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                      Duration
+                    </label>
+
+                    <div className="grid grid-cols-2 gap-3">
+
+                      {/* HOURS */}
+                      <div className="relative">
+                        <Clock3
+                          size={16}
+                          className="
+                            pointer-events-none
+                            absolute
+                            left-3.5
+                            top-1/2
+                            -translate-y-1/2
+                            text-gray-400
+                          "
+                        />
+
+                        <input
+                          type="number"
+                          name="hours"
+                          min="0"
+                          max="24"
+                          value={form.hours}
+                          onChange={handleChange}
+                          placeholder="0"
+                          disabled={submitting}
+                          className="
+                            h-11 w-full rounded-xl
+                            border border-gray-200
+                            bg-white
+                            pl-10 pr-12
+                            text-sm text-gray-900
+                            outline-none transition
+                            placeholder:text-gray-400
+                            focus:border-blue-500
+                            focus:ring-2 focus:ring-blue-100
+                            disabled:cursor-not-allowed
+                            disabled:bg-gray-50
+                          "
+                        />
+
+                        <span
+                          className="
+                            pointer-events-none
+                            absolute
+                            right-3.5
+                            top-1/2
+                            -translate-y-1/2
+                            text-xs
+                            font-medium
+                            text-gray-400
+                          "
+                        >
+                          hr
+                        </span>
+                      </div>
+
+                      {/* MINUTES */}
+                      <div className="relative">
+                        <input
+                          type="number"
+                          name="minutes"
+                          min="0"
+                          max="59"
+                          value={form.minutes}
+                          onChange={handleChange}
+                          placeholder="0"
+                          disabled={submitting}
+                          className="
+                            h-11 w-full rounded-xl
+                            border border-gray-200
+                            bg-white
+                            px-4 pr-12
+                            text-sm text-gray-900
+                            outline-none transition
+                            placeholder:text-gray-400
+                            focus:border-blue-500
+                            focus:ring-2 focus:ring-blue-100
+                            disabled:cursor-not-allowed
+                            disabled:bg-gray-50
+                          "
+                        />
+
+                        <span
+                          className="
+                            pointer-events-none
+                            absolute
+                            right-3.5
+                            top-1/2
+                            -translate-y-1/2
+                            text-xs
+                            font-medium
+                            text-gray-400
+                          "
+                        >
+                          min
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* PREVIEW */}
+                    {(Number(form.hours) > 0 ||
+                      Number(form.minutes) > 0) && (
+                      <p className="mt-2 text-xs text-gray-400">
+                        Service duration:{" "}
+                        <span className="font-semibold text-gray-600">
+                          {Number(form.hours) > 0 &&
+                            `${Number(form.hours)} hr `}
+                          {Number(form.minutes) > 0 &&
+                            `${Number(form.minutes)} min`}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </section>
 
               {/* =================================================
                   SERVICE TYPE
               ================================================= */}
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-                <div className="mb-6">
+              <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 bg-gray-50/70 px-5 py-5 sm:px-6">
                   <h2 className="text-lg font-bold text-gray-900">
                     Service Type
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Choose how customers can receive your service.
+                    Choose how customers can receive your
+                    service.
                   </p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    {
-                      value: "online",
-                      title: "Online",
-                      description:
-                        "Provide the service remotely.",
-                    },
-                    {
-                      value: "onsite",
-                      title: "Onsite",
-                      description:
-                        "Visit the customer's location.",
-                    },
-                    {
-                      value: "hybrid",
-                      title: "Hybrid",
-                      description:
-                        "Offer both online and onsite.",
-                    },
-                  ].map((type) => (
-                    <label
-                      key={type.value}
-                      className={`cursor-pointer rounded-xl border p-4 transition ${
-                        form.serviceType === type.value
-                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-100"
-                          : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="serviceType"
-                        value={type.value}
-                        checked={
-                          form.serviceType ===
-                          type.value
-                        }
-                        onChange={handleChange}
-                        className="sr-only"
-                      />
+                <div className="p-5 sm:p-6">
 
-                      <div className="flex items-start gap-3">
-                        <div
-                          className={`mt-0.5 h-4 w-4 rounded-full border-4 ${
-                            form.serviceType ===
-                            type.value
-                              ? "border-blue-600"
-                              : "border-gray-300"
-                          }`}
-                        />
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {[
+                      {
+                        value: "online",
+                        title: "Online",
+                        description:
+                          "Provide the service remotely.",
+                      },
+                      {
+                        value: "onsite",
+                        title: "Onsite",
+                        description:
+                          "Visit the customer's location.",
+                      },
+                      {
+                        value: "hybrid",
+                        title: "Hybrid",
+                        description:
+                          "Offer both online and onsite.",
+                      },
+                    ].map((type) => {
+                      const selected =
+                        form.serviceType ===
+                        type.value;
 
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {type.title}
-                          </p>
-
-                          <p className="mt-1 text-xs leading-5 text-gray-500">
-                            {type.description}
-                          </p>
-                        </div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-
-                {/* =================================================
-                    LOCATION
-                ================================================= */}
-
-                {(form.serviceType === "onsite" ||
-                  form.serviceType === "hybrid") && (
-                  <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
-                    <div className="mb-4">
-                      <h3 className="text-sm font-bold text-gray-900">
-                        Service Location
-                      </h3>
-
-                      <p className="mt-1 text-xs text-gray-500">
-                        Tell customers where you provide the onsite service.
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* ADDRESS */}
-
-                      <div>
-                        <label className="mb-2 block text-sm font-semibold text-gray-700">
-                          Address
-                        </label>
-
-                        <input
-                          type="text"
-                          name="address"
-                          value={getLocationValue()}
-                          onChange={handleLocationChange}
-                          placeholder="Enter service address"
-                          className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        />
-                      </div>
-
-                      {/* CITY + STATE */}
-
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <label className="mb-2 block text-sm font-semibold text-gray-700">
-                            City
-                          </label>
-
-                          <input
-                            type="text"
-                            name="city"
-                            value={
-                              typeof form.location ===
-                              "object"
-                                ? form.location?.city ||
-                                  ""
-                                : ""
+                      return (
+                        <label
+                          key={type.value}
+                          className={`
+                            cursor-pointer
+                            rounded-xl
+                            border
+                            p-4
+                            transition
+                            ${
+                              selected
+                                ? "border-blue-500 bg-blue-50 ring-2 ring-blue-100"
+                                : "border-gray-200 bg-white hover:border-gray-300"
                             }
-                            onChange={handleLocationChange}
-                            placeholder="City"
-                            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="mb-2 block text-sm font-semibold text-gray-700">
-                            State
-                          </label>
-
+                          `}
+                        >
                           <input
-                            type="text"
-                            name="state"
-                            value={
-                              typeof form.location ===
-                              "object"
-                                ? form.location?.state ||
-                                  ""
-                                : ""
-                            }
-                            onChange={handleLocationChange}
-                            placeholder="State"
-                            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            type="radio"
+                            name="serviceType"
+                            value={type.value}
+                            checked={selected}
+                            onChange={handleChange}
+                            disabled={submitting}
+                            className="sr-only"
                           />
-                        </div>
-                      </div>
 
-                      {/* PINCODE */}
+                          <div className="flex items-start gap-3">
+                            <div
+                              className={`
+                                mt-0.5
+                                h-4
+                                w-4
+                                rounded-full
+                                border-4
+                                ${
+                                  selected
+                                    ? "border-blue-600"
+                                    : "border-gray-300"
+                                }
+                              `}
+                            />
 
-                      <div className="sm:max-w-xs">
-                        <label className="mb-2 block text-sm font-semibold text-gray-700">
-                          Pincode
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {type.title}
+                              </p>
+
+                              <p className="mt-1 text-xs leading-5 text-gray-500">
+                                {type.description}
+                              </p>
+                            </div>
+                          </div>
                         </label>
-
-                        <input
-                          type="text"
-                          name="pincode"
-                          value={
-                            typeof form.location ===
-                            "object"
-                              ? form.location?.pincode ||
-                                ""
-                              : ""
-                          }
-                          onChange={handleLocationChange}
-                          placeholder="Pincode"
-                          className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        />
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
+
+                  {/* =================================================
+                      LOCATION
+                  ================================================= */}
+
+                  {(form.serviceType === "onsite" ||
+                    form.serviceType === "hybrid") && (
+                    <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                      <div className="mb-4">
+                        <h3 className="text-sm font-bold text-gray-900">
+                          Service Location
+                        </h3>
+
+                        <p className="mt-1 text-xs text-gray-500">
+                          Tell customers where you provide
+                          the onsite service.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+
+                        {/* ADDRESS */}
+                        <div>
+                          <label className="mb-2 block text-sm font-semibold text-gray-700">
+                            Address
+                          </label>
+
+                          <input
+                            type="text"
+                            name="address"
+                            value={getLocationValue()}
+                            onChange={
+                              handleLocationChange
+                            }
+                            placeholder="Enter service address"
+                            disabled={submitting}
+                            className="
+                              h-11 w-full
+                              rounded-xl
+                              border border-gray-200
+                              bg-white px-4
+                              text-sm text-gray-900
+                              outline-none transition
+                              placeholder:text-gray-400
+                              focus:border-blue-500
+                              focus:ring-2
+                              focus:ring-blue-100
+                            "
+                          />
+                        </div>
+
+                        {/* CITY + STATE */}
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700">
+                              City
+                            </label>
+
+                            <input
+                              type="text"
+                              name="city"
+                              value={
+                                typeof form.location ===
+                                "object"
+                                  ? form.location?.city ||
+                                    ""
+                                  : ""
+                              }
+                              onChange={
+                                handleLocationChange
+                              }
+                              placeholder="City"
+                              disabled={submitting}
+                              className="
+                                h-11 w-full
+                                rounded-xl
+                                border border-gray-200
+                                bg-white px-4
+                                text-sm text-gray-900
+                                outline-none transition
+                                placeholder:text-gray-400
+                                focus:border-blue-500
+                                focus:ring-2
+                                focus:ring-blue-100
+                              "
+                            />
+                          </div>
+
+                          <div>
+                            <label className="mb-2 block text-sm font-semibold text-gray-700">
+                              State
+                            </label>
+
+                            <input
+                              type="text"
+                              name="state"
+                              value={
+                                typeof form.location ===
+                                "object"
+                                  ? form.location?.state ||
+                                    ""
+                                  : ""
+                              }
+                              onChange={
+                                handleLocationChange
+                              }
+                              placeholder="State"
+                              disabled={submitting}
+                              className="
+                                h-11 w-full
+                                rounded-xl
+                                border border-gray-200
+                                bg-white px-4
+                                text-sm text-gray-900
+                                outline-none transition
+                                placeholder:text-gray-400
+                                focus:border-blue-500
+                                focus:ring-2
+                                focus:ring-blue-100
+                              "
+                            />
+                          </div>
+                        </div>
+
+                        {/* PINCODE */}
+                        <div className="sm:max-w-xs">
+                          <label className="mb-2 block text-sm font-semibold text-gray-700">
+                            Pincode
+                          </label>
+
+                          <input
+                            type="text"
+                            name="pincode"
+                            value={
+                              typeof form.location ===
+                              "object"
+                                ? form.location?.pincode ||
+                                  ""
+                                : ""
+                            }
+                            onChange={
+                              handleLocationChange
+                            }
+                            placeholder="Pincode"
+                            disabled={submitting}
+                            className="
+                              h-11 w-full
+                              rounded-xl
+                              border border-gray-200
+                              bg-white px-4
+                              text-sm text-gray-900
+                              outline-none transition
+                              placeholder:text-gray-400
+                              focus:border-blue-500
+                              focus:ring-2
+                              focus:ring-blue-100
+                            "
+                          />
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </section>
 
               {/* =================================================
                   TAGS
               ================================================= */}
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-                <div className="mb-6">
+              <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 bg-gray-50/70 px-5 py-5 sm:px-6">
                   <h2 className="text-lg font-bold text-gray-900">
                     Tags
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Add keywords that help customers find your service.
+                    Add keywords that help customers find
+                    your service.
                   </p>
                 </div>
 
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) =>
-                      setTagInput(e.target.value)
-                    }
-                    onKeyDown={handleTagKeyDown}
-                    placeholder="e.g. react"
-                    className="h-11 min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  />
+                <div className="p-5 sm:p-6">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={tagInput}
+                      onChange={(e) =>
+                        setTagInput(e.target.value)
+                      }
+                      onKeyDown={handleTagKeyDown}
+                      placeholder="e.g. react"
+                      disabled={submitting}
+                      className="
+                        h-11 min-w-0 flex-1
+                        rounded-xl
+                        border border-gray-200
+                        bg-white px-4
+                        text-sm text-gray-900
+                        outline-none transition
+                        placeholder:text-gray-400
+                        focus:border-blue-500
+                        focus:ring-2
+                        focus:ring-blue-100
+                      "
+                    />
 
-                  <button
-                    type="button"
-                    onClick={addTag}
-                    className="rounded-xl bg-gray-900 px-5 text-sm font-semibold text-white transition hover:bg-gray-800"
-                  >
-                    Add
-                  </button>
-                </div>
-
-                {form.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {form.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700"
-                      >
-                        #{tag}
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeTag(tag)
-                          }
-                          className="rounded-full p-0.5 hover:bg-blue-100"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </span>
-                    ))}
+                    <button
+                      type="button"
+                      onClick={addTag}
+                      disabled={submitting}
+                      className="
+                        rounded-xl
+                        bg-gray-900
+                        px-5
+                        text-sm font-semibold
+                        text-white
+                        transition
+                        hover:bg-gray-800
+                        disabled:cursor-not-allowed
+                        disabled:opacity-50
+                      "
+                    >
+                      Add
+                    </button>
                   </div>
-                )}
-              </div>
+
+                  {form.tags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {form.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="
+                            inline-flex
+                            items-center
+                            gap-1.5
+                            rounded-lg
+                            bg-blue-50
+                            px-3 py-1.5
+                            text-xs
+                            font-semibold
+                            text-blue-700
+                          "
+                        >
+                          #{tag}
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeTag(tag)
+                            }
+                            disabled={submitting}
+                            className="
+                              rounded-full
+                              p-0.5
+                              hover:bg-blue-100
+                            "
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </section>
 
               {/* =================================================
                   IMAGES
               ================================================= */}
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-                <div className="mb-6">
+              <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 bg-gray-50/70 px-5 py-5 sm:px-6">
                   <h2 className="text-lg font-bold text-gray-900">
                     Service Images
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Update the images customers see for this service.
+                    Update the images customers see for
+                    this service.
                   </p>
                 </div>
 
-                {/* EXISTING IMAGES */}
+                <div className="p-5 sm:p-6">
 
-                {existingImages.length > 0 && (
-                  <div className="mb-6">
-                    <p className="mb-3 text-sm font-semibold text-gray-700">
-                      Current Images
+                  {/* EXISTING IMAGES */}
+                  {existingImages.length > 0 && (
+                    <div className="mb-6">
+                      <p className="mb-3 text-sm font-semibold text-gray-700">
+                        Current Images
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        {existingImages.map(
+                          (image, index) => (
+                            <div
+                              key={`${image}-${index}`}
+                              className="
+                                group relative
+                                aspect-square
+                                overflow-hidden
+                                rounded-xl
+                                border
+                                border-gray-200
+                              "
+                            >
+                              <img
+                                src={image}
+                                alt={`Service ${
+                                  index + 1
+                                }`}
+                                className="
+                                  h-full w-full
+                                  object-cover
+                                  transition
+                                  group-hover:scale-105
+                                "
+                              />
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeExistingImage(
+                                    index
+                                  )
+                                }
+                                disabled={submitting}
+                                className="
+                                  absolute right-2 top-2
+                                  flex h-8 w-8
+                                  items-center
+                                  justify-center
+                                  rounded-full
+                                  bg-white/90
+                                  text-red-600
+                                  shadow-sm
+                                  backdrop-blur
+                                  transition
+                                  hover:bg-white
+                                  disabled:opacity-50
+                                "
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* NEW IMAGES */}
+                  {newImages.length > 0 && (
+                    <div className="mb-6">
+                      <p className="mb-3 text-sm font-semibold text-gray-700">
+                        New Images
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        {newImages.map(
+                          (file, index) => (
+                            <div
+                              key={`${file.name}-${index}`}
+                              className="
+                                group relative
+                                aspect-square
+                                overflow-hidden
+                                rounded-xl
+                                border
+                                border-gray-200
+                                bg-gray-100
+                              "
+                            >
+                              <img
+                                src={URL.createObjectURL(
+                                  file
+                                )}
+                                alt={file.name}
+                                className="
+                                  h-full w-full
+                                  object-cover
+                                "
+                              />
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeNewImage(
+                                    index
+                                  )
+                                }
+                                disabled={submitting}
+                                className="
+                                  absolute right-2 top-2
+                                  flex h-8 w-8
+                                  items-center
+                                  justify-center
+                                  rounded-full
+                                  bg-white/90
+                                  text-red-600
+                                  shadow-sm
+                                  backdrop-blur
+                                  transition
+                                  hover:bg-white
+                                  disabled:opacity-50
+                                "
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ADD IMAGE */}
+                  <label
+                    className={`
+                      flex
+                      cursor-pointer
+                      flex-col
+                      items-center
+                      justify-center
+                      rounded-xl
+                      border-2
+                      border-dashed
+                      border-gray-200
+                      bg-gray-50
+                      px-6
+                      py-10
+                      text-center
+                      transition
+                      ${
+                        submitting
+                          ? "cursor-not-allowed opacity-50"
+                          : "hover:border-blue-300 hover:bg-blue-50/50"
+                      }
+                    `}
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
+                      <ImagePlus className="h-6 w-6 text-gray-400" />
+                    </div>
+
+                    <p className="mt-4 text-sm font-semibold text-gray-700">
+                      Add new images
                     </p>
 
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                      {existingImages.map(
-                        (image, index) => (
-                          <div
-                            key={`${image}-${index}`}
-                            className="group relative aspect-square overflow-hidden rounded-xl border border-gray-200"
-                          >
-                            <img
-                              src={image}
-                              alt={`Service ${index + 1}`}
-                              className="h-full w-full object-cover"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeExistingImage(
-                                  index
-                                )
-                              }
-                              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm backdrop-blur transition hover:bg-white"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* NEW IMAGES */}
-
-                {newImages.length > 0 && (
-                  <div className="mb-6">
-                    <p className="mb-3 text-sm font-semibold text-gray-700">
-                      New Images
+                    <p className="mt-1 text-xs text-gray-400">
+                      PNG, JPG or WEBP
                     </p>
 
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                      {newImages.map(
-                        (file, index) => (
-                          <div
-                            key={`${file.name}-${index}`}
-                            className="group relative aspect-square overflow-hidden rounded-xl border border-gray-200 bg-gray-100"
-                          >
-                            <img
-                              src={URL.createObjectURL(
-                                file
-                              )}
-                              alt={file.name}
-                              className="h-full w-full object-cover"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeNewImage(
-                                  index
-                                )
-                              }
-                              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-600 shadow-sm backdrop-blur transition hover:bg-white"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center transition hover:border-blue-300 hover:bg-blue-50/50">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm">
-                    <ImagePlus className="h-6 w-6 text-gray-400" />
-                  </div>
-
-                  <p className="mt-4 text-sm font-semibold text-gray-700">
-                    Add new images
-                  </p>
-
-                  <p className="mt-1 text-xs text-gray-400">
-                    PNG, JPG or WEBP
-                  </p>
-
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp"
-                    multiple
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              </div>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      multiple
+                      onChange={handleImageChange}
+                      disabled={submitting}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </section>
 
               {/* =================================================
                   ACTIONS
               ================================================= */}
 
-              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <div className="flex flex-col-reverse gap-3 pb-8 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   disabled={submitting}
@@ -1103,7 +1540,19 @@ const EditServicePage = () => {
                       "/provider/services"
                     )
                   }
-                  className="h-11 rounded-xl border border-gray-200 bg-white px-6 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="
+                    h-11
+                    rounded-xl
+                    border border-gray-200
+                    bg-white
+                    px-6
+                    text-sm font-semibold
+                    text-gray-700
+                    transition
+                    hover:bg-gray-50
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                  "
                 >
                   Cancel
                 </button>
@@ -1111,7 +1560,23 @@ const EditServicePage = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="
+                    inline-flex
+                    h-11
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-blue-600
+                    px-6
+                    text-sm font-semibold
+                    text-white
+                    shadow-sm
+                    transition
+                    hover:bg-blue-700
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
+                  "
                 >
                   {submitting ? (
                     <>
@@ -1126,12 +1591,12 @@ const EditServicePage = () => {
                   )}
                 </button>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </section>
       </div>
     </main>
   );
 };
 
-export default EditServicePage;
+export default EditServicePage
