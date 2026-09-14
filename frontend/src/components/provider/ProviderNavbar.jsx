@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
   Bell,
   BellRing,
@@ -8,19 +9,21 @@ import {
   Loader2,
   Menu,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
 
-import {
-  getMyNotifications,
-  markNotificationAsRead,
-} from "../../api/notification.api";
+import { Link } from "react-router-dom";
+
+import { useNotifications } from "../../context/NotificationContext";
 
 const ProviderNavbar = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [notificationLoading, setNotificationLoading] = useState(false);
   const [markingId, setMarkingId] = useState(null);
+
+  const {
+    notifications,
+    loading: notificationLoading,
+    unreadCount,
+    markAsRead,
+  } = useNotifications();
 
   // =====================================================
   // MOBILE SIDEBAR
@@ -30,51 +33,6 @@ const ProviderNavbar = () => {
     window.dispatchEvent(
       new Event("provider:open-sidebar")
     );
-  };
-
-  // =====================================================
-  // FETCH RECENT NOTIFICATIONS
-  // =====================================================
-
-  const fetchRecentNotifications = async () => {
-    try {
-      setNotificationLoading(true);
-
-      const response = await getMyNotifications(1, 5);
-
-      setNotifications(
-        response?.data?.notifications || []
-      );
-    } catch (error) {
-      console.error(
-        "Failed to fetch recent notifications:",
-        error
-      );
-
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to load notifications."
-      );
-    } finally {
-      setNotificationLoading(false);
-    }
-  };
-
-  // =====================================================
-  // NOTIFICATION TOGGLE
-  // =====================================================
-
-  const handleNotificationClick = () => {
-    setNotificationOpen((prev) => {
-      const nextState = !prev;
-
-      if (nextState) {
-        fetchRecentNotifications();
-      }
-
-      return nextState;
-    });
   };
 
   // =====================================================
@@ -89,28 +47,11 @@ const ProviderNavbar = () => {
     try {
       setMarkingId(notification._id);
 
-      await markNotificationAsRead(notification._id);
-
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item._id === notification._id
-            ? {
-                ...item,
-                isRead: true,
-              }
-            : item
-        )
-      );
+      await markAsRead(notification._id);
     } catch (error) {
       console.error(
         "Failed to mark notification as read:",
         error
-      );
-
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update notification."
       );
     } finally {
       setMarkingId(null);
@@ -149,9 +90,7 @@ const ProviderNavbar = () => {
   // HELPERS
   // =====================================================
 
-  const unreadCount = notifications.filter(
-    (notification) => !notification.isRead
-  ).length;
+  const recentNotifications = notifications.slice(0, 5);
 
   const formatTime = (date) => {
     if (!date) return "";
@@ -229,7 +168,9 @@ const ProviderNavbar = () => {
         ================================================= */}
 
         <div className="flex items-center gap-3">
+
           {/* Mobile Menu */}
+
           <button
             type="button"
             onClick={handleOpenMobileMenu}
@@ -252,6 +193,7 @@ const ProviderNavbar = () => {
           </button>
 
           {/* Brand */}
+
           <div>
             <h2 className="text-lg font-bold tracking-tight text-gray-900">
               Provider Panel
@@ -268,6 +210,7 @@ const ProviderNavbar = () => {
         ================================================= */}
 
         <div className="flex items-center gap-2 sm:gap-3">
+
           {/* =================================================
               NOTIFICATIONS
           ================================================= */}
@@ -278,7 +221,9 @@ const ProviderNavbar = () => {
           >
             <button
               type="button"
-              onClick={handleNotificationClick}
+              onClick={() =>
+                setNotificationOpen((prev) => !prev)
+              }
               aria-label="Notifications"
               aria-expanded={notificationOpen}
               className="
@@ -319,6 +264,7 @@ const ProviderNavbar = () => {
             </button>
 
             {/* Notification Popover */}
+
             {notificationOpen && (
               <div
                 className="
@@ -336,7 +282,9 @@ const ProviderNavbar = () => {
                   sm:w-[380px]
                 "
               >
+
                 {/* Header */}
+
                 <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4">
                   <div>
                     <h3 className="text-sm font-bold text-gray-900">
@@ -356,6 +304,7 @@ const ProviderNavbar = () => {
                 </div>
 
                 {/* Body */}
+
                 {notificationLoading ? (
                   <div className="flex items-center justify-center px-6 py-12">
                     <div className="text-center">
@@ -369,7 +318,7 @@ const ProviderNavbar = () => {
                       </p>
                     </div>
                   </div>
-                ) : notifications.length === 0 ? (
+                ) : recentNotifications.length === 0 ? (
                   <div className="px-6 py-11 text-center">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gray-50 text-gray-400">
                       <Bell size={21} />
@@ -386,7 +335,7 @@ const ProviderNavbar = () => {
                   </div>
                 ) : (
                   <div className="max-h-[360px] overflow-y-auto">
-                    {notifications.map((notification) => {
+                    {recentNotifications.map((notification) => {
                       const isUnread =
                         !notification.isRead;
 
@@ -412,7 +361,9 @@ const ProviderNavbar = () => {
                           `}
                         >
                           <div className="flex items-start gap-3">
+
                             {/* Icon */}
+
                             <div
                               className={`
                                 flex
@@ -437,8 +388,10 @@ const ProviderNavbar = () => {
                             </div>
 
                             {/* Content */}
+
                             <div className="min-w-0 flex-1">
                               <div className="flex items-start justify-between gap-3">
+
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-2">
                                     <h4
@@ -467,8 +420,11 @@ const ProviderNavbar = () => {
                                   </p>
                                 </div>
 
+                                {/* Time */}
+
                                 <span className="flex shrink-0 items-center gap-1 text-[10px] text-gray-400">
                                   <Clock3 size={10} />
+
                                   {formatTime(
                                     notification.createdAt
                                   )}
@@ -476,7 +432,9 @@ const ProviderNavbar = () => {
                               </div>
 
                               {/* Footer */}
+
                               <div className="mt-2 flex items-center gap-2">
+
                                 {notification.type && (
                                   <span className="rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-400">
                                     {notification.type.replaceAll(
@@ -539,6 +497,7 @@ const ProviderNavbar = () => {
                 )}
 
                 {/* Footer */}
+
                 <div className="border-t border-gray-100 bg-gray-50/70 p-2">
                   <Link
                     to="/provider/notifications"
@@ -569,16 +528,15 @@ const ProviderNavbar = () => {
           </div>
 
           {/* Divider */}
+
           <div className="hidden h-8 w-px bg-gray-200 sm:block" />
 
-          {/* =================================================
-             
-          ================================================= */}
+          {/* Provider */}
 
           <div className="flex items-center gap-2 rounded-xl px-2 py-1.5 sm:gap-3">
             <div
               className="
-               flex
+                flex
                 h-9
                 w-9
                 shrink-0
@@ -615,4 +573,4 @@ const ProviderNavbar = () => {
   );
 };
 
-export default ProviderNavbar;
+export default ProviderNavbar

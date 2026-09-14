@@ -47,19 +47,20 @@ const BecomeProviderPage = () => {
           Is case mein form show hoga.
         */
 
-        if (error?.response?.status === 404) {
-          setProvider(null);
-        } else {
-          console.error(
-            "Provider status check failed:",
-            error
-          );
+       if (error?.message === "Provider not found") {
+  setProvider(null);
+} else {
+  console.error(
+    "Provider status check failed:",
+    error
+  );
 
-          setError(
-            error?.response?.data?.message ||
-              "Unable to check provider status."
-          );
-        }
+  setError(
+    error?.message ||
+      error?.response?.data?.message ||
+      "Unable to check provider status."
+  );
+}
       } finally {
         setLoading(false);
       }

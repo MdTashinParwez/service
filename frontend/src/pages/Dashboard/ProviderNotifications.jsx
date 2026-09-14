@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import {
   Bell,
   BellRing,
@@ -10,53 +11,37 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
+
 import { toast } from "sonner";
 
 import ProviderNavbar from "../../components/provider/ProviderNavbar";
 import ProviderSidebar from "../../components/provider/ProviderSidebar";
-
-import {
-  getMyNotifications,
-  markNotificationAsRead,
-  markAllNotificationsAsRead,
-} from "../../api/notification.api";
+import { useNotifications } from "../../context/NotificationContext";
 
 const ProviderNotifications = () => {
-  const [notifications, setNotifications] = useState([]);
+  const {
+    notifications,
+    loading,
+    pagination,
+    unreadCount,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications();
 
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
   const [markingAll, setMarkingAll] = useState(false);
   const [markingId, setMarkingId] = useState(null);
-
   const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
-
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalNotifications: 0,
-  });
 
   // =====================================================
-  // FETCH NOTIFICATIONS
+  // FETCH / REFRESH
   // =====================================================
 
-  const fetchNotifications = async (currentPage = 1) => {
+  const handleRefresh = async () => {
     try {
-      setLoading(true);
       setError("");
-
-      const response = await getMyNotifications(currentPage, 10);
-
-      const data = response?.data;
-
-      setNotifications(data?.notifications || []);
-
-      setPagination({
-        currentPage: data?.currentPage || currentPage,
-        totalPages: data?.totalPages || 1,
-        totalNotifications: data?.totalNotifications || 0,
-      });
+      await fetchNotifications(page, 10);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
 
@@ -67,14 +52,8 @@ const ProviderNotifications = () => {
 
       setError(message);
       toast.error(message);
-    } finally {
-      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchNotifications(page);
-  }, [page]);
 
   // =====================================================
   // MARK SINGLE AS READ
@@ -86,18 +65,7 @@ const ProviderNotifications = () => {
     try {
       setMarkingId(notification._id);
 
-      await markNotificationAsRead(notification._id);
-
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item._id === notification._id
-            ? {
-                ...item,
-                isRead: true,
-              }
-            : item
-        )
-      );
+      await markAsRead(notification._id);
 
       toast.success("Notification marked as read.");
     } catch (error) {
@@ -121,11 +89,7 @@ const ProviderNotifications = () => {
   // =====================================================
 
   const handleMarkAllAsRead = async () => {
-    const hasUnread = notifications.some(
-      (notification) => !notification.isRead
-    );
-
-    if (!hasUnread) {
+    if (unreadCount === 0) {
       toast.info("All notifications are already read.");
       return;
     }
@@ -133,14 +97,7 @@ const ProviderNotifications = () => {
     try {
       setMarkingAll(true);
 
-      await markAllNotificationsAsRead();
-
-      setNotifications((prev) =>
-        prev.map((notification) => ({
-          ...notification,
-          isRead: true,
-        }))
-      );
+      await markAllAsRead();
 
       toast.success("All notifications marked as read.");
     } catch (error) {
@@ -156,6 +113,29 @@ const ProviderNotifications = () => {
       );
     } finally {
       setMarkingAll(false);
+    }
+  };
+
+  // =====================================================
+  // PAGE CHANGE
+  // =====================================================
+
+  const handlePageChange = async (nextPage) => {
+    try {
+      setError("");
+      setPage(nextPage);
+
+      await fetchNotifications(nextPage, 10);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to load notifications.";
+
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -213,18 +193,10 @@ const ProviderNotifications = () => {
   };
 
   // =====================================================
-  // UNREAD COUNT
-  // =====================================================
-
-  const unreadCount = notifications.filter(
-    (notification) => !notification.isRead
-  ).length;
-
-  // =====================================================
   // LOADING
   // =====================================================
 
-  if (loading) {
+  if (loading && notifications.length === 0) {
     return (
       <main className="min-h-screen bg-gray-50">
         <ProviderNavbar />
@@ -300,7 +272,8 @@ const ProviderNotifications = () => {
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => fetchNotifications(page)}
+                    onClick={handleRefresh}
+                    disabled={loading}
                     className="
                       inline-flex items-center justify-center gap-2
                       rounded-xl border border-gray-200
@@ -308,9 +281,15 @@ const ProviderNotifications = () => {
                       text-sm font-semibold text-gray-700
                       shadow-sm transition
                       hover:bg-gray-50
+                      disabled:cursor-not-allowed
+                      disabled:opacity-50
                     "
                   >
-                    <RefreshCw size={16} />
+                    <RefreshCw
+                      size={16}
+                      className={loading ? "animate-spin" : ""}
+                    />
+
                     Refresh
                   </button>
 
@@ -366,7 +345,7 @@ const ProviderNotifications = () => {
 
                   <button
                     type="button"
-                    onClick={() => fetchNotifications(page)}
+                    onClick={handleRefresh}
                     className="
                       inline-flex items-center justify-center gap-2
                       rounded-xl bg-white px-4 py-2.5
@@ -390,6 +369,7 @@ const ProviderNotifications = () => {
               <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
 
                 {/* List Header */}
+
                 <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 sm:px-6">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 text-gray-600">
@@ -402,8 +382,8 @@ const ProviderNotifications = () => {
                       </h2>
 
                       <p className="text-xs text-gray-500">
-                        {pagination.totalNotifications}{" "}
-                        {pagination.totalNotifications === 1
+                        {pagination?.totalNotifications || 0}{" "}
+                        {pagination?.totalNotifications === 1
                           ? "notification"
                           : "notifications"}
                       </p>
@@ -418,6 +398,7 @@ const ProviderNotifications = () => {
                 </div>
 
                 {/* Notifications */}
+
                 <div className="divide-y divide-gray-100">
                   {notifications.map((notification) => {
                     const isUnread = !notification.isRead;
@@ -442,6 +423,7 @@ const ProviderNotifications = () => {
                         <div className="flex items-start gap-4">
 
                           {/* Notification Icon */}
+
                           <div
                             className={`
                               flex h-11 w-11 shrink-0
@@ -462,8 +444,8 @@ const ProviderNotifications = () => {
                           </div>
 
                           {/* Notification Content */}
-                          <div className="min-w-0 flex-1">
 
+                          <div className="min-w-0 flex-1">
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
 
                               <div className="min-w-0">
@@ -494,6 +476,7 @@ const ProviderNotifications = () => {
                               </div>
 
                               {/* Time */}
+
                               <div className="flex shrink-0 items-center gap-1.5 text-xs text-gray-400">
                                 <Clock3 size={13} />
 
@@ -504,9 +487,11 @@ const ProviderNotifications = () => {
                             </div>
 
                             {/* Footer */}
+
                             <div className="mt-4 flex flex-wrap items-center gap-3">
 
                               {/* Notification Type */}
+
                               {notification.type && (
                                 <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
                                   {notification.type.replaceAll(
@@ -517,17 +502,18 @@ const ProviderNotifications = () => {
                               )}
 
                               {/* Sender */}
+
                               {notification.sender?.username && (
                                 <span className="text-xs text-gray-400">
                                   From @
                                   {
-                                    notification.sender
-                                      .username
+                                    notification.sender.username
                                   }
                                 </span>
                               )}
 
                               {/* Mark Read */}
+
                               {isUnread && (
                                 <button
                                   type="button"
@@ -567,6 +553,7 @@ const ProviderNotifications = () => {
                               )}
 
                               {/* Read State */}
+
                               {!isUnread && (
                                 <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-medium text-gray-400">
                                   <CheckCheck size={13} />
@@ -604,7 +591,7 @@ const ProviderNotifications = () => {
 
                 <button
                   type="button"
-                  onClick={() => fetchNotifications(page)}
+                  onClick={handleRefresh}
                   className="
                     mt-6 inline-flex items-center gap-2
                     rounded-xl border border-gray-200
@@ -624,14 +611,13 @@ const ProviderNotifications = () => {
                 PAGINATION
             ================================================= */}
 
-            {!error && pagination.totalPages > 1 && (
+            {!error && pagination?.totalPages > 1 && (
               <div className="mt-6 flex items-center justify-center gap-3">
-
                 <button
                   type="button"
-                  disabled={page === 1}
+                  disabled={page === 1 || loading}
                   onClick={() =>
-                    setPage((prev) => prev - 1)
+                    handlePageChange(page - 1)
                   }
                   className="
                     inline-flex items-center gap-1
@@ -656,10 +642,11 @@ const ProviderNotifications = () => {
                 <button
                   type="button"
                   disabled={
-                    page === pagination.totalPages
+                    page === pagination.totalPages ||
+                    loading
                   }
                   onClick={() =>
-                    setPage((prev) => prev + 1)
+                    handlePageChange(page + 1)
                   }
                   className="
                     inline-flex items-center gap-1
@@ -686,4 +673,4 @@ const ProviderNotifications = () => {
   );
 };
 
-export default ProviderNotifications
+export default ProviderNotifications;
