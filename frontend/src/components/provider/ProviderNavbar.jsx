@@ -25,20 +25,15 @@ const ProviderNavbar = () => {
     markAsRead,
   } = useNotifications();
 
-  // =====================================================
   // MOBILE SIDEBAR
-  // =====================================================
-
+ 
   const handleOpenMobileMenu = () => {
     window.dispatchEvent(
       new Event("provider:open-sidebar")
     );
   };
 
-  // =====================================================
   // MARK SINGLE NOTIFICATION AS READ
-  // =====================================================
-
   const handleMarkAsRead = async (notification) => {
     if (!notification?._id || notification.isRead) {
       return;
@@ -58,9 +53,6 @@ const ProviderNavbar = () => {
     }
   };
 
-  // =====================================================
-  // CLOSE POPOVER ON OUTSIDE CLICK
-  // =====================================================
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -86,10 +78,8 @@ const ProviderNavbar = () => {
     };
   }, []);
 
-  // =====================================================
   // HELPERS
-  // =====================================================
-
+  
   const recentNotifications = notifications.slice(0, 5);
 
   const formatTime = (date) => {
@@ -163,9 +153,6 @@ const ProviderNavbar = () => {
           lg:px-8
         "
       >
-        {/* =================================================
-            LEFT
-        ================================================= */}
 
         <div className="flex items-center gap-3">
 
@@ -205,15 +192,8 @@ const ProviderNavbar = () => {
           </div>
         </div>
 
-        {/* =================================================
-            RIGHT
-        ================================================= */}
 
         <div className="flex items-center gap-2 sm:gap-3">
-
-          {/* =================================================
-              NOTIFICATIONS
-          ================================================= */}
 
           <div
             className="relative"
