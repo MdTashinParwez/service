@@ -15,7 +15,7 @@ import CancelBookingCard from "../../components/booking/CancelBookingCard";
 import BookingStatusBadge from "../../components/booking/BookingStatusBadge";
 import BookingStatusBanner from "../../components/booking/BookingStatusBanner";
 import ProviderBookingActions from "../../components/booking/ProviderBookingActions";
-
+import BookingPaymentCard from "../../components/booking/BookingPaymentCard";
 import { getBookingById } from "../../api/booking.api";
 import { useAuth } from "../../context/AuthContext";
 
@@ -249,6 +249,17 @@ const BookingDetailsPage = () => {
                 <>
                   <ProviderMiniCard
                     booking={booking}
+                  />
+
+                  <BookingPaymentCard
+                    booking={booking}
+                    onPaymentSuccess={(updatedPayment) => {
+                      setBooking((prev) => ({
+                        ...prev,
+                        paymentStatus: "completed",
+                        paymentId: updatedPayment._id,
+                      }));
+                    }}
                   />
 
                   {["pending", "accepted"].includes(
