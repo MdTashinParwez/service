@@ -91,9 +91,7 @@ export const NotificationProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(null);
 
-  // -----------------------------
   // GET NOTIFICATIONS
-  // -----------------------------
 
 const fetchNotifications = useCallback(
   async (page = 1, limit = 10) => {
@@ -128,9 +126,7 @@ const fetchNotifications = useCallback(
 )
 
 
-  // -----------------------------
   // MARK ONE AS READ
-  // -----------------------------
   const markAsRead = useCallback(async (id) => {
     try {
       await markNotificationAsRead(id);

@@ -34,9 +34,6 @@ const ProviderNotifications = () => {
   const [markingId, setMarkingId] = useState(null);
   const [error, setError] = useState("");
 
-  // =====================================================
-  // FETCH / REFRESH
-  // =====================================================
 
   const handleRefresh = async () => {
     try {
@@ -54,11 +51,7 @@ const ProviderNotifications = () => {
       toast.error(message);
     }
   };
-
-  // =====================================================
-  // MARK SINGLE AS READ
-  // =====================================================
-
+  
   const handleMarkAsRead = async (notification) => {
     if (!notification?._id || notification.isRead) return;
 
@@ -84,9 +77,7 @@ const ProviderNotifications = () => {
     }
   };
 
-  // =====================================================
   // MARK ALL AS READ
-  // =====================================================
 
   const handleMarkAllAsRead = async () => {
     if (unreadCount === 0) {
@@ -116,9 +107,7 @@ const ProviderNotifications = () => {
     }
   };
 
-  // =====================================================
   // PAGE CHANGE
-  // =====================================================
 
   const handlePageChange = async (nextPage) => {
     try {
@@ -139,9 +128,7 @@ const ProviderNotifications = () => {
     }
   };
 
-  // =====================================================
   // TIME FORMAT
-  // =====================================================
 
   const formatTime = (date) => {
     if (!date) return "";
@@ -192,9 +179,7 @@ const ProviderNotifications = () => {
     });
   };
 
-  // =====================================================
   // LOADING
-  // =====================================================
 
   if (loading && notifications.length === 0) {
     return (
@@ -227,9 +212,7 @@ const ProviderNotifications = () => {
     );
   }
 
-  // =====================================================
   // PAGE
-  // =====================================================
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -241,9 +224,6 @@ const ProviderNotifications = () => {
         <section className="min-w-0 flex-1">
           <div className="mx-auto w-full max-w-[1100px] p-5 sm:p-6 lg:p-8">
 
-            {/* =================================================
-                PAGE HEADER
-            ================================================= */}
 
             <div className="mb-7">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
@@ -326,10 +306,7 @@ const ProviderNotifications = () => {
               </div>
             </div>
 
-            {/* =================================================
-                ERROR
-            ================================================= */}
-
+      
             {error && (
               <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -360,10 +337,6 @@ const ProviderNotifications = () => {
                 </div>
               </div>
             )}
-
-            {/* =================================================
-                NOTIFICATION LIST
-            ================================================= */}
 
             {!error && notifications.length > 0 && (
               <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
@@ -607,9 +580,7 @@ const ProviderNotifications = () => {
               </section>
             )}
 
-            {/* =================================================
-                PAGINATION
-            ================================================= */}
+           
 
             {!error && pagination?.totalPages > 1 && (
               <div className="mt-6 flex items-center justify-center gap-3">
