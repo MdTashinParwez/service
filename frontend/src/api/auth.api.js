@@ -17,6 +17,12 @@ export const loginUser = async (credentials) => {
   });
 };
 
+export const refreshAccessToken = async () => {
+  return apiClient("/users/refresh-token", {
+    method: "POST",
+  });
+};
+
 export const getCurrentUser = async () => {
   return apiClient("/users/current-user", {
     method: "POST",
