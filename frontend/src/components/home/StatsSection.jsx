@@ -1,22 +1,7 @@
-const stats = [
-  {
-    value: "12,000+",
-    label: "Verified Providers",
-  },
-  {
-    value: "50,000+",
-    label: "Happy Customers",
-  },
-  {
-    value: "280+",
-    label: "Cities Covered",
-  },
-  {
-    value: "4.9/5",
-    label: "Average Rating",
-  },
-];
-
+const stats = [ { value: "100+", label: "Services", }, {
+   value: "500+", label: "Professionals", },
+    { value: "4.8/5", label: "Average rating", },
+     { value: "24/7", label: "Platform access", }, ];
 const StatsSection = () => {
   return (
     <section className="-mt-8 pb-20">

@@ -16,7 +16,7 @@ const FAQSection = () => {
           </h2>
 
           <p className="mt-3 text-muted-foreground">
-            Everything you need to know about ServiceHub.
+            Everything you need to know about JanSeva.
           </p>
         </div>
 
