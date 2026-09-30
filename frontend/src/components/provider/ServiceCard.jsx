@@ -15,9 +15,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// =====================================================
+// FORMAT DURATION
+// Backend stores duration in minutes
+// =====================================================
+
+const formatDuration = (totalMinutes) => {
+  const minutes = Number(totalMinutes);
+
+  if (!Number.isFinite(minutes) || minutes <= 0) {
+    return "—";
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours > 0 && remainingMinutes > 0) {
+    return `${hours} hr ${remainingMinutes} min`;
+  }
+
+  if (hours > 0) {
+    return `${hours} hr`;
+  }
+
+  return `${remainingMinutes} min`;
+};
+
 const ServiceCard = ({ service, onDelete, deleting }) => {
   const hasImage =
-    Array.isArray(service.images) && service.images.length > 0;
+    Array.isArray(service.images) &&
+    service.images.length > 0;
 
   return (
     <article
@@ -31,7 +58,9 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
         hover:shadow-lg
       "
     >
-      {/* ================= IMAGE ================= */}
+      {/* =================================================
+          IMAGE
+      ================================================= */}
 
       <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
         {hasImage ? (
@@ -59,7 +88,6 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
         )}
 
         {/* Image overlay */}
-
         <div
           className="
             absolute inset-x-0 bottom-0
@@ -68,7 +96,9 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
           "
         />
 
-        {/* ================= STATUS ================= */}
+        {/* =================================================
+            STATUS
+        ================================================= */}
 
         <span
           className={`
@@ -98,16 +128,12 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
           {service.isActive ? "Active" : "Inactive"}
         </span>
 
-        {/* ================= DROPDOWN ================= */}
+        {/* =================================================
+            DROPDOWN
+        ================================================= */}
 
         <div className="absolute right-3 top-3">
           <DropdownMenu>
-            {/* 
-              IMPORTANT:
-              No Button component here.
-              DropdownMenuTrigger itself renders a button.
-            */}
-
             <DropdownMenuTrigger
               type="button"
               aria-label="Service options"
@@ -133,11 +159,10 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
               align="end"
               className="w-40"
             >
-              {/* EDIT */}
-
               <DropdownMenuItem
                 onClick={() => {
-                  window.location.href = `/provider/services/${service._id}/edit`;
+                  window.location.href =
+                    `/provider/services/${service._id}/edit`;
                 }}
                 className="cursor-pointer"
               >
@@ -146,8 +171,6 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
-
-              {/* DELETE */}
 
               <DropdownMenuItem
                 disabled={deleting}
@@ -168,11 +191,13 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
         </div>
       </div>
 
-      {/* ================= CONTENT ================= */}
+      {/* =================================================
+          CONTENT
+      ================================================= */}
 
       <div className="p-4 sm:p-5">
-        {/* TITLE */}
 
+        {/* Title */}
         <h2
           className="
             line-clamp-1
@@ -184,8 +209,7 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
           {service.title}
         </h2>
 
-        {/* DESCRIPTION */}
-
+        {/* Description */}
         <p
           className="
             mt-2
@@ -200,7 +224,9 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
             "No description provided."}
         </p>
 
-        {/* ================= PRICE + DURATION ================= */}
+        {/* =================================================
+            PRICE + DURATION
+        ================================================= */}
 
         <div
           className="
@@ -210,8 +236,7 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
             pt-4
           "
         >
-          {/* PRICE */}
-
+          {/* Price */}
           <div>
             <p className="text-xs font-medium text-gray-400">
               Starting from
@@ -222,8 +247,7 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
             </p>
           </div>
 
-          {/* DURATION */}
-
+          {/* Duration */}
           <div
             className="
               inline-flex
@@ -237,15 +261,17 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
           >
             <Clock3 className="h-4 w-4 text-gray-400" />
 
-            {service.duration} min
+            {formatDuration(service.duration)}
           </div>
         </div>
 
-        {/* ================= ACTIONS ================= */}
+        {/* =================================================
+            ACTIONS
+        ================================================= */}
 
         <div className="mt-5 grid grid-cols-2 gap-2.5">
-          {/* EDIT */}
 
+          {/* Edit */}
           <Link
             to={`/provider/services/${service._id}/edit`}
             className="
@@ -264,8 +290,7 @@ const ServiceCard = ({ service, onDelete, deleting }) => {
             Edit
           </Link>
 
-          {/* DELETE */}
-
+          {/* Delete */}
           <button
             type="button"
             disabled={deleting}
