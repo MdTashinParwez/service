@@ -16,7 +16,7 @@ import BookingSuccessPage from "../pages/Booking/BookingSuccessPage";
 import ServiceDetailsPage from "../pages/services/ServiceDetailsPage";
 import MyBookingsPage from "../pages/Booking/MyBookingsPage";
 import BookingDetailsPage from "../pages/Booking/BookingDetailsPage";
-import ProtectedRoute from "./protecdRoute";
+import ProtectedRoute from "./protectedRoute";
 import ProviderDashboard from "../pages/Dashboard/ProviderDashboard";
 import ProviderBookingsPage from "../pages/Dashboard/ProviderBookingsPage";
 import ProviderServicesPage from "../pages/Dashboard/ProviderServicesPage";

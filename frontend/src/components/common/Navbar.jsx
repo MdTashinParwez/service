@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
 import {
   CalendarDays,
   ChevronDown,
@@ -8,17 +10,30 @@ import {
   Moon,
   UserRound,
   X,
+  LayoutDashboard,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { useAuth } from "../../context/AuthContext";
 import { logoutUser } from "../../api/auth.api";
+import { getProviderStatus } from "../../api/provider.api";
 
 const navLinks = [
-  { name: "Services", path: "/services" },
-  { name: "Providers", path: "/providers" },
-  { name: "Become a Provider", path: "/become-provider" },
-  { name: "About", path: "/about" },
+  {
+    name: "Services",
+    path: "/services",
+  },
+  {
+    name: "Providers",
+    path: "/providers",
+  },
+  {
+    name: "Become a Provider",
+    path: "/become-provider",
+  },
+  {
+    name: "About",
+    path: "/about",
+  },
 ];
 
 const Navbar = () => {
@@ -26,8 +41,38 @@ const Navbar = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [provider, setProvider] = useState(null);
 
   const navigate = useNavigate();
+
+  // =====================================================
+  // FETCH PROVIDER STATUS
+  // =====================================================
+
+  useEffect(() => {
+    const fetchProviderStatus = async () => {
+      // Only provider-role users can access /providers/status
+      if (user?.role !== "provider") {
+        setProvider(null);
+        return;
+      }
+
+      try {
+        const response = await getProviderStatus();
+        setProvider(response.data.provider);
+      } catch (error) {
+        // Don't show error to user.
+        // If status cannot be fetched, simply don't show dashboard.
+        setProvider(null);
+      }
+    };
+
+    if (user) {
+      fetchProviderStatus();
+    } else {
+      setProvider(null);
+    }
+  }, [user]);
 
   // =====================================================
   // LOGOUT
@@ -38,6 +83,7 @@ const Navbar = () => {
       await logoutUser();
 
       setUser(null);
+      setProvider(null);
       setProfileOpen(false);
       setMobileMenuOpen(false);
 
@@ -76,7 +122,9 @@ const Navbar = () => {
   // =====================================================
 
   const handleThemeComingSoon = () => {
-    toast.info("Dark mode is coming soon.");
+    toast("Dark mode is coming soon.", {
+      icon: "🌙",
+    });
   };
 
   // =====================================================
@@ -89,11 +137,13 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         {/* =================================================
             MAIN NAVBAR
         ================================================= */}
 
         <div className="flex h-16 items-center justify-between">
+
           {/* =================================================
               LOGO
           ================================================= */}
@@ -110,7 +160,7 @@ const Navbar = () => {
               hover:text-blue-700
             "
           >
-            ServiceHub
+            JanSeva
           </Link>
 
           {/* =================================================
@@ -143,7 +193,9 @@ const Navbar = () => {
           ================================================= */}
 
           <div className="hidden items-center gap-3 lg:flex">
-            {/* Theme button */}
+
+            {/* Theme */}
+
             <button
               type="button"
               onClick={handleThemeComingSoon}
@@ -160,11 +212,14 @@ const Navbar = () => {
             </button>
 
             {/* Authentication */}
+
             {loading ? (
               <div className="h-10 w-36 animate-pulse rounded-xl bg-gray-100" />
             ) : user ? (
               <div className="relative">
-                {/* Profile trigger */}
+
+                {/* Profile Trigger */}
+
                 <button
                   type="button"
                   onClick={() =>
@@ -178,7 +233,6 @@ const Navbar = () => {
                     transition hover:bg-gray-50
                   "
                 >
-                  {/* Avatar */}
                   <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
                     {user.avatar ? (
                       <img
@@ -206,11 +260,15 @@ const Navbar = () => {
                 </button>
 
                 {/* Dropdown */}
+
                 {profileOpen && (
                   <div className="absolute right-0 top-12 z-50 w-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
-                    {/* User summary */}
+
+                    {/* User Summary */}
+
                     <div className="border-b border-gray-100 px-4 py-4">
                       <div className="flex items-center gap-3">
+
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100">
                           {user.avatar ? (
                             <img
@@ -234,11 +292,16 @@ const Navbar = () => {
                             {user.email}
                           </p>
                         </div>
+
                       </div>
                     </div>
 
                     {/* Actions */}
+
                     <div className="p-2">
+
+                      {/* My Profile */}
+
                       <Link
                         to="/profile"
                         onClick={closeProfileMenu}
@@ -253,6 +316,8 @@ const Navbar = () => {
                         My Profile
                       </Link>
 
+                      {/* My Bookings */}
+
                       <Link
                         to="/my-bookings"
                         onClick={closeProfileMenu}
@@ -266,9 +331,29 @@ const Navbar = () => {
                         <CalendarDays size={17} />
                         My Bookings
                       </Link>
+
+                      {/* Provider Dashboard */}
+
+                      {provider?.isApproved && (
+                        <Link
+                          to="/provider-dashboard"
+                          onClick={closeProfileMenu}
+                          className="
+                            flex items-center gap-3 rounded-xl
+                            px-3 py-2.5 text-sm font-medium
+                            text-gray-700 transition
+                            hover:bg-gray-50 hover:text-gray-900
+                          "
+                        >
+                          <LayoutDashboard size={17} />
+                          Provider Dashboard
+                        </Link>
+                      )}
+
                     </div>
 
                     {/* Logout */}
+
                     <div className="border-t border-gray-100 p-2">
                       <button
                         type="button"
@@ -284,11 +369,14 @@ const Navbar = () => {
                         Logout
                       </button>
                     </div>
+
                   </div>
                 )}
+
               </div>
             ) : (
               <div className="flex items-center gap-2">
+
                 <Link
                   to="/login"
                   className="
@@ -310,8 +398,10 @@ const Navbar = () => {
                 >
                   Get Started
                 </Link>
+
               </div>
             )}
+
           </div>
 
           {/* =================================================
@@ -319,7 +409,9 @@ const Navbar = () => {
           ================================================= */}
 
           <div className="flex items-center gap-2 lg:hidden">
+
             {/* Theme */}
+
             <button
               type="button"
               onClick={handleThemeComingSoon}
@@ -334,6 +426,7 @@ const Navbar = () => {
             </button>
 
             {/* Menu */}
+
             <button
               type="button"
               onClick={() => {
@@ -354,7 +447,9 @@ const Navbar = () => {
                 <Menu size={21} />
               )}
             </button>
+
           </div>
+
         </div>
 
         {/* =================================================
@@ -363,7 +458,9 @@ const Navbar = () => {
 
         {mobileMenuOpen && (
           <div className="border-t border-gray-200 py-4 lg:hidden">
+
             {/* Navigation */}
+
             <div className="space-y-1">
               {navLinks.map((link) => (
                 <NavLink
@@ -386,13 +483,16 @@ const Navbar = () => {
             <div className="my-4 border-t border-gray-200" />
 
             {/* Mobile Auth */}
+
             {loading ? (
               <div className="h-11 w-full animate-pulse rounded-xl bg-gray-100" />
             ) : user ? (
               <div className="space-y-2">
 
-                {/* User summary */}
+                {/* User Summary */}
+
                 <div className="flex items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3">
+
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
                     {user.avatar ? (
                       <img
@@ -416,9 +516,11 @@ const Navbar = () => {
                       {user.email}
                     </p>
                   </div>
+
                 </div>
 
                 {/* My Profile */}
+
                 <Link
                   to="/profile"
                   onClick={closeMobileMenu}
@@ -433,6 +535,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* My Bookings */}
+
                 <Link
                   to="/bookings"
                   onClick={closeMobileMenu}
@@ -446,7 +549,25 @@ const Navbar = () => {
                   My Bookings
                 </Link>
 
+                {/* Provider Dashboard */}
+
+                {provider?.isApproved && (
+                  <Link
+                    to="/provider/dashboard"
+                    onClick={closeMobileMenu}
+                    className="
+                      flex items-center gap-3 rounded-xl
+                      px-4 py-3 text-sm font-semibold
+                      text-gray-700 transition hover:bg-gray-100
+                    "
+                  >
+                    <LayoutDashboard size={18} />
+                    Provider Dashboard
+                  </Link>
+                )}
+
                 {/* Logout */}
+
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -461,9 +582,11 @@ const Navbar = () => {
                   <LogOut size={17} />
                   Logout
                 </button>
+
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
+
                 <Link
                   to="/login"
                   onClick={closeMobileMenu}
@@ -489,10 +612,13 @@ const Navbar = () => {
                 >
                   Get Started
                 </Link>
+
               </div>
             )}
+
           </div>
         )}
+
       </div>
     </nav>
   );
