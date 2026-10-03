@@ -6,12 +6,12 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 
 import { getServiceById } from "../../api/service.api";
 
-import ServiceHero from "../../components/serviceDetails/ServiceHero";
-import ServiceOverview from "../../components/serviceDetails/ServiceOverview";
-import ProviderProfileCard from "../../components/serviceDetails/ProviderProfileCard";
-import BookingPanel from "../../components/serviceDetails/BookingPanel";
-import ServiceGallery from "../../components/serviceDetails/ServiceGallery";
-import ServiceReviews from "../../components/serviceDetails/ServiceReviews";
+import ServiceHero from "../../components/servicedetails/ServiceHero";
+import ServiceOverview from "../../components/servicedetails/ServiceOverview";
+import ProviderProfileCard from "../../components/servicedetails/ProviderProfileCard";
+import BookingPanel from "../../components/servicedetails/BookingPanel";
+import ServiceGallery from "../../components/servicedetails/ServiceGallery";
+import ServiceReviews from "../../components/servicedetails/ServiceReviews";
 
 const ServiceDetailsPage = () => {
   const { serviceId } = useParams();
