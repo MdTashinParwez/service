@@ -93,3 +93,17 @@ export const completeBooking = async (bookingId) => {
     method: "PATCH",
   });
 };
+
+export const getAvailableSlots = async (serviceId, date) => {
+  const params = new URLSearchParams({
+    serviceId,
+    date,
+  });
+
+  return await apiClient(
+    `/provider-availability/slots?${params.toString()}`,
+    {
+      method: "GET",
+    }
+  );
+};
