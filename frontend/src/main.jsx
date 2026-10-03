@@ -5,17 +5,16 @@ import { Toaster } from "react-hot-toast";
 import "./index.css";
 import router from "./routes/AppRoutes";
 import { AuthProvider } from "./context/AuthContext";
-import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationProvider } from "./context/NotificationContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   
- <ThemeProvider>
+
   <AuthProvider>
     <NotificationProvider>
     <RouterProvider router={router} />
     <Toaster position="top-right" />
      </NotificationProvider>
   </AuthProvider>
-</ThemeProvider>
+
 );
