@@ -86,22 +86,39 @@ const router = createBrowserRouter([
        <BecomeProviderPage/>
        </ProtectedRoute>
       },
-      {
-      path: "booking/:serviceId",
-      element: <BookingPage />,
+     {
+        path: "booking/:serviceId",
+        element: (
+          <ProtectedRoute>
+            <BookingPage />
+          </ProtectedRoute>
+        ),
+      },
+       {
+        path: "booking/success",
+        element: (
+          <ProtectedRoute>
+            <BookingSuccessPage />
+          </ProtectedRoute>
+        ),
       },
       {
-      path: "booking/success",
-      element: <BookingSuccessPage />,
+        path: "bookings",
+        element: (
+          <ProtectedRoute>
+            <MyBookingsPage />
+          </ProtectedRoute>
+        ),
       },
-      {
-      path: "bookings",
-      element: <MyBookingsPage />,
+           {
+        path: "bookings/:bookingId",
+        element: (
+          <ProtectedRoute>
+            <BookingDetailsPage />
+          </ProtectedRoute>
+        ),
       },
-      {
-      path: "bookings/:bookingId",
-      element: <BookingDetailsPage/>,
-      },
+
        {
         path: "provider/dashboard",
         element: (

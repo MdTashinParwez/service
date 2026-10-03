@@ -1,6 +1,4 @@
-const API_BASE_URL = "http://localhost:8000/api/v1";
-// const API_BASE_URL = "https://servicehub-backend-388b.onrender.com";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const apiClient = async (endpoint, options = {}) => {
   const response = await fetch(
     `${API_BASE_URL}${endpoint}`,
