@@ -1,85 +1,125 @@
 ﻿import { Link } from "react-router-dom";
-import { BadgeCheck, BriefcaseBusiness, ShieldCheck, Star } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BriefcaseBusiness,
+  Clock3,
+  Star,
+  UserRound,
+} from "lucide-react";
 
 const ProviderProfileCard = ({ provider }) => {
   if (!provider) return null;
 
+  const name = provider.businessName || "Professional Provider";
+  const rating = Number(provider.averageRating ?? 0);
+  const reviews = Number(provider.totalReviews ?? 0);
+  const bookings = Number(provider.totalBookings ?? 0);
+  const completedBookings = Number(provider.completedBookings ?? 0);
+  const responseTime = Number(provider.responseTime ?? 0);
+
+  const formatResponseTime = () => {
+    if (!responseTime) return "Not specified";
+    if (responseTime < 60) return `${responseTime} min`;
+    return `${Math.round(responseTime / 60)} hr`;
+  };
+
   return (
-    <section className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_18px_50px_-34px_rgba(15,23,42,0.45)]">
-      <div className="border-b border-slate-100 px-6 py-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">
-          Provider
-        </p>
-        <h2 className="mt-2 text-xl font-bold text-slate-950">
-          Who will handle your service
-        </h2>
-      </div>
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+      <div className="h-24 bg-gradient-to-br from-blue-600 via-indigo-600 to-slate-900" />
 
-      <div className="space-y-5 p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-xl font-bold text-blue-700">
-            {provider.businessName?.charAt(0)?.toUpperCase() || "P"}
+      <div className="px-6 pb-6">
+        <div className="-mt-10 flex items-end justify-between gap-4">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-white bg-blue-100 text-2xl font-bold text-blue-700 shadow-sm">
+            {name.charAt(0).toUpperCase()}
           </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <Link
-                to={`/provider/${provider._id}`}
-                className="truncate text-lg font-bold text-slate-950 transition hover:text-blue-600"
-              >
-                {provider.businessName || "Unknown Provider"}
-              </Link>
-
-              {provider.isVerified && (
-                <BadgeCheck size={17} className="shrink-0 text-blue-600" />
-              )}
-            </div>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Professional service provider
-            </p>
-          </div>
+          {provider.isVerified && (
+            <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">
+              <BadgeCheck size={14} />
+              Verified
+            </span>
+          )}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <div className="flex items-center gap-1 text-sm text-slate-500">
-              <Star size={15} className="fill-amber-400 text-amber-400" />
-              Rating
-            </div>
-            <p className="mt-1 text-2xl font-bold text-slate-950">
-              {provider.averageRating ?? 0}
-            </p>
-          </div>
+        <div className="mt-4">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">
+            {name}
+          </h2>
 
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <div className="flex items-center gap-1 text-sm text-slate-500">
-              <BriefcaseBusiness size={15} className="text-blue-600" />
-              Reviews
-            </div>
-            <p className="mt-1 text-2xl font-bold text-slate-950">
-              {provider.totalReviews ?? 0}
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-800">
-          <div className="flex items-start gap-2">
-            <ShieldCheck size={17} className="mt-0.5 shrink-0" />
-            <span>
-              {provider.isVerified
-                ? "Verified service provider with a trusted record of completed work."
-                : "Service provider verification is in progress."}
+          <div className="mt-2 flex items-center gap-2">
+            <Star
+              size={15}
+              className="fill-amber-400 text-amber-400"
+            />
+            <span className="text-sm font-semibold text-slate-800">
+              {rating.toFixed(1)}
+            </span>
+            <span className="text-sm text-slate-500">
+              ({reviews} {reviews === 1 ? "review" : "reviews"})
             </span>
           </div>
         </div>
 
-        <Link
-          to={`/provider/${provider._id}`}
-          className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 transition hover:border-blue-200 hover:text-blue-700"
-        >
-          View provider profile
-        </Link>
+        {provider.businessDescription && (
+          <>
+            <div className="my-5 border-t border-slate-100" />
+
+            <div>
+              <div className="flex items-center gap-2">
+                <UserRound size={17} className="text-blue-600" />
+                <h3 className="font-semibold text-slate-900">
+                  About the provider
+                </h3>
+              </div>
+
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {provider.businessDescription}
+              </p>
+            </div>
+          </>
+        )}
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <BriefcaseBusiness size={15} className="text-blue-600" />
+              Completed
+            </div>
+
+            <p className="mt-2 text-lg font-bold text-slate-900">
+              {completedBookings.toLocaleString("en-IN")}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <Clock3 size={15} className="text-blue-600" />
+              Response
+            </div>
+
+            <p className="mt-2 text-lg font-bold text-slate-900">
+              {formatResponseTime()}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+          <p className="text-xs text-slate-500">Total bookings</p>
+          <p className="mt-1 text-sm font-semibold text-slate-900">
+            {bookings.toLocaleString("en-IN")}
+          </p>
+        </div>
+
+        {provider._id && (
+          <Link
+            to={`/provider/${provider._id}`}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+          >
+            View provider profile
+            <ArrowRight size={16} />
+          </Link>
+        )}
       </div>
     </section>
   );
