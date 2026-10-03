@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getCurrentUser } from "../api/auth.api";
+import { getCurrentUser, refreshAccessToken } from "../api/auth.api";
 import socket from "../socket";
 
 const AuthContext = createContext(null);
@@ -14,12 +14,36 @@ export const AuthProvider = ({ children }) => {
 
       setUser(response.data);
     } catch (error) {
-      console.log("No authenticated user");
+    
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
+
+  const initializeAuth = async () => {
+  try {
+    const response = await getCurrentUser();
+    setUser(response.data);
+  } catch (error) {
+    try {
+      await refreshAccessToken();
+
+      const response = await getCurrentUser();
+      setUser(response.data);
+    } catch (refreshError) {
+
+      setUser(null);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  initializeAuth();
+}, []);
+
 
   useEffect(() => {
     fetchCurrentUser();
@@ -35,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{
+      value={{ 
         user,
         setUser,
         loading,

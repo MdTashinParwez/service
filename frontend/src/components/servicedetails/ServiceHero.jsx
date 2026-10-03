@@ -302,7 +302,7 @@ const ServiceHero = ({ service }) => {
 
             <Link
               to={`/booking/${service._id}`}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-600 sm:hidden"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-600 lg:hidden"
             >
               Book Now
               <ArrowRight size={17} />

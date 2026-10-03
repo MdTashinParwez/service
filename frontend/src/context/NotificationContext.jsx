@@ -144,9 +144,7 @@ const fetchNotifications = useCallback(
     }
   }, []);
 
-  // -----------------------------
-  // MARK ALL AS READ
-  // -----------------------------
+
   const markAllAsRead = useCallback(async () => {
     try {
       await markAllNotificationsAsRead();
@@ -163,9 +161,6 @@ const fetchNotifications = useCallback(
     }
   }, []);
 
-  // -----------------------------
-  // INITIAL FETCH
-  // -----------------------------
   useEffect(() => {
     if (!user) {
       setNotifications([]);
@@ -176,15 +171,12 @@ const fetchNotifications = useCallback(
     fetchNotifications(1, 10);
   }, [user, fetchNotifications]);
 
-  // -----------------------------
-  // SOCKET NOTIFICATIONS
-  // -----------------------------
+
   useEffect(() => {
     if (!user) return;
 
     const handleNotification = async (type, data) => {
-      console.log("Socket Notification:", data);
-
+    
       // Show real-time toast
       showNotificationToast(type, data.message);
 

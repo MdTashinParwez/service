@@ -23,7 +23,7 @@ const CancelBookingCard = ({ booking, onCancelled }) => {
         reason.trim()
       );
 
-      console.log("Cancel response:", response);
+
 
       setShowConfirm(false);
 

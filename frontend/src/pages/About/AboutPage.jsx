@@ -126,7 +126,7 @@ const About = () => {
             </h1>
 
             <p className="mt-6 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
-              ServiceHub connects customers with independent service
+              Helper connects customers with independent service
               providers in their local area, making it easier to discover,
               compare and book the help they need.
             </p>
@@ -174,7 +174,7 @@ const About = () => {
 
             <div>
               <p className="text-sm font-semibold text-blue-600">
-                What is ServiceHub?
+                What is Helper?
               </p>
 
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
@@ -186,7 +186,7 @@ const About = () => {
               </h2>
 
               <p className="mt-5 max-w-xl text-sm leading-7 text-gray-600 sm:text-base">
-                ServiceHub is a marketplace and discovery platform for local
+                Helper is a marketplace and discovery platform for local
                 services. The providers listed on the platform are
                 independent individuals or businesses who offer their own
                 services to customers.
@@ -194,9 +194,9 @@ const About = () => {
 
               <p className="mt-4 max-w-xl text-sm leading-7 text-gray-600 sm:text-base">
                 That means when you book a plumber, electrician, tutor,
-                cleaner or another professional through ServiceHub, the
+                cleaner or another professional through Helper, the
                 actual service is provided by that independent provider.
-                ServiceHub helps make the discovery and booking experience
+                Helper helps make the discovery and booking experience
                 easier.
               </p>
             </div>
@@ -248,7 +248,7 @@ const About = () => {
             </h2>
 
             <p className="mt-4 text-sm leading-6 text-gray-600 sm:text-base">
-              ServiceHub keeps the customer journey straightforward.
+              Helper keeps the customer journey straightforward.
             </p>
           </div>
 
@@ -362,7 +362,7 @@ const About = () => {
               </h2>
 
               <p className="mt-5 text-sm leading-7 text-gray-600 sm:text-base">
-                ServiceHub is built around local discovery. Instead of
+                Helper is built around local discovery. Instead of
                 limiting customers to a fixed company network, the platform
                 helps them discover independent professionals operating in
                 their neighbourhood or nearby locations.
@@ -409,7 +409,7 @@ const About = () => {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-gray-600 sm:text-base">
-              ServiceHub is designed to create more transparency between
+              Helper is designed to create more transparency between
               customers and independent providers. Provider onboarding
               includes identity information and platform-level verification
               processes.
@@ -476,7 +476,7 @@ const About = () => {
               </h2>
 
               <p className="mt-5 max-w-2xl text-sm leading-7 text-gray-600 sm:text-base">
-                ServiceHub gives independent professionals a place to
+                Helper gives independent professionals a place to
                 showcase their services and connect with customers looking
                 for those services locally.
               </p>
@@ -516,7 +516,7 @@ const About = () => {
                   transition hover:bg-gray-800
                 "
               >
-                Join ServiceHub as a Provider
+                Join Helper as a Provider
                 <ArrowRight size={17} />
               </Link>
             </div>
@@ -577,7 +577,7 @@ const About = () => {
                 </p>
 
                 <h2 className="mt-1 text-2xl font-bold tracking-tight text-gray-950">
-                  What ServiceHub does — and what it doesn't.
+                  What Helper does — and what it doesn't.
                 </h2>
               </div>
             </div>
@@ -586,7 +586,7 @@ const About = () => {
 
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  ServiceHub provides
+                  Helper provides
                 </p>
 
                 <div className="mt-4 space-y-3">
@@ -600,7 +600,7 @@ const About = () => {
 
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  ServiceHub does not
+                  Helper does not
                 </p>
 
                 <div className="mt-4 space-y-3">
@@ -645,7 +645,7 @@ const About = () => {
 
             <PolicyCard
               title="Terms & Conditions"
-              description="Understand the rules and responsibilities for using ServiceHub."
+              description="Understand the rules and responsibilities for using Helper."
               to="/terms"
             />
 

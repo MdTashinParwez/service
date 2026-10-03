@@ -28,12 +28,9 @@ const ServiceDetailsPage = () => {
 
         const response = await getServiceById(serviceId);
 
-        console.log("SERVICE DETAILS:", response);
-
         setService(response.data);
       } catch (error) {
         console.error("Failed to fetch service:", error);
-
         setError(error?.message || "Failed to load service");
       } finally {
         setLoading(false);
@@ -101,7 +98,6 @@ const ServiceDetailsPage = () => {
     );
   }
 
-  // NOT FOUND
   if (!service) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">

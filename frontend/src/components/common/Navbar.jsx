@@ -45,10 +45,6 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-  // =====================================================
-  // FETCH PROVIDER STATUS
-  // =====================================================
-
   useEffect(() => {
     const fetchProviderStatus = async () => {
       // Only provider-role users can access /providers/status
@@ -73,10 +69,6 @@ const Navbar = () => {
       setProvider(null);
     }
   }, [user]);
-
-  // =====================================================
-  // LOGOUT
-  // =====================================================
 
   const handleLogout = async () => {
     try {
@@ -127,9 +119,6 @@ const Navbar = () => {
     });
   };
 
-  // =====================================================
-  // PROFILE AVATAR
-  // =====================================================
 
   const avatarInitial =
     user?.username?.charAt(0)?.toUpperCase() || "U";
@@ -160,7 +149,7 @@ const Navbar = () => {
               hover:text-blue-700
             "
           >
-            JanSeva
+            Helper
           </Link>
 
           {/* =================================================
@@ -319,7 +308,7 @@ const Navbar = () => {
                       {/* My Bookings */}
 
                       <Link
-                        to="/my-bookings"
+                        to="/bookings"
                         onClick={closeProfileMenu}
                         className="
                           flex items-center gap-3 rounded-xl
@@ -336,7 +325,7 @@ const Navbar = () => {
 
                       {provider?.isApproved && (
                         <Link
-                          to="/provider-dashboard"
+                          to="/provider/dashboard"
                           onClick={closeProfileMenu}
                           className="
                             flex items-center gap-3 rounded-xl

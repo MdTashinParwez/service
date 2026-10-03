@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 
-import {
-  getProviderStatus,
-  createProvider,
-} from "../../api/provider.api";
+import { getProviderStatus, createProvider } from "../../api/provider.api";
+import { apiClient } from "../../api/apiClient";
 
 import ProviderApplicationForm from "../../components/become-provider/ProviderApplicationForm";
 import ProviderStatus from "../../components/become-provider/ProviderStatus";
@@ -11,91 +9,118 @@ import ProviderStatusLoader from "../../components/become-provider/ProviderStatu
 
 const BecomeProviderPage = () => {
   const [loading, setLoading] = useState(true);
-  const [provider, setProvider] = useState(null);
-  const [error, setError] = useState("");
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
-  // =====================================================
-  // CHECK PROVIDER STATUS
-  // =====================================================
+  const [provider, setProvider] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  const [error, setError] = useState("");
+  const [categoryError, setCategoryError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      setCategoryError("");
+
+      const response = await apiClient("/categories", {
+        method: "GET",
+      });
+
+      console.log("CATEGORIES RESPONSE:", response);
+
+      const categoryData =
+        response?.data?.categories ||
+        response?.data?.data ||
+        response?.data ||
+        [];
+
+      if (!Array.isArray(categoryData)) {
+        throw new Error("Invalid categories response");
+      }
+
+      setCategories(categoryData);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to load business categories.";
+
+      setCategoryError(message);
+      setCategories([]);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+
+  const checkProviderStatus = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await getProviderStatus();
+
+      console.log("PROVIDER STATUS RESPONSE:", response);
+
+      setProvider(response?.data?.provider || null);
+    } catch (error) {
+      console.error("Provider status check failed:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to check provider status.";
+
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   useEffect(() => {
-    const checkProviderStatus = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const response = await getProviderStatus();
-
-        /*
-          Expected response:
-
-          {
-            data: {
-              provider: {...}
-            }
-          }
-
-          Agar provider nahi hai to API 404 de sakti hai.
-        */
-
-        setProvider(response?.data?.provider || null);
-      } catch (error) {
-        /*
-          404 ka matlab:
-          User abhi provider nahi hai.
-
-          Is case mein form show hoga.
-        */
-
-       if (error?.message === "Provider not found") {
-  setProvider(null);
-} else {
-  console.error(
-    "Provider status check failed:",
-    error
-  );
-
-  setError(
-    error?.message ||
-      error?.response?.data?.message ||
-      "Unable to check provider status."
-  );
-}
-      } finally {
-        setLoading(false);
-      }
+    const initializePage = async () => {
+      await Promise.all([
+        checkProviderStatus(),
+        fetchCategories(),
+      ]);
     };
 
-    checkProviderStatus();
+    initializePage();
   }, []);
 
-  // =====================================================
-  // CREATE PROVIDER
-  // =====================================================
 
   const handleCreateProvider = async (formData) => {
     try {
       setError("");
-
-      /*
-        FormData already ProviderApplicationForm
-        se milega.
-      */
+      setSubmitting(true);
 
       const response = await createProvider(formData);
 
+      console.log("CREATE PROVIDER RESPONSE:", response);
+
       /*
-        Provider create hone ke baad
-        immediately pending state show karenge.
-      */
+       * Provider successfully created.
+       *
+       * Instead of trusting the create response structure,
+       * fetch the latest provider status from backend.
+       * This keeps frontend state consistent with database.
+       */
 
-      const createdProvider =
-        response?.data?.provider;
+      const statusResponse = await getProviderStatus();
 
-      setProvider(createdProvider || {
-        isApproved: false,
-        isVerified: false,
-      });
+      console.log(
+        "PROVIDER STATUS AFTER CREATE:",
+        statusResponse
+      );
+
+      setProvider(
+        statusResponse?.data?.provider || null
+      );
 
       return {
         success: true,
@@ -117,20 +142,14 @@ const BecomeProviderPage = () => {
         success: false,
         message,
       };
+    } finally {
+      setSubmitting(false);
     }
   };
-
-  // =====================================================
-  // LOADING
-  // =====================================================
 
   if (loading) {
     return <ProviderStatusLoader />;
   }
-
-  // =====================================================
-  // STATUS ERROR
-  // =====================================================
 
   if (error && !provider) {
     return (
@@ -144,15 +163,20 @@ const BecomeProviderPage = () => {
             <p className="mt-2 text-sm leading-6 text-red-600">
               {error}
             </p>
+
+            <button
+              type="button"
+              onClick={checkProviderStatus}
+              className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </main>
     );
   }
 
-  // =====================================================
-  // PROVIDER ALREADY EXISTS
-  // =====================================================
 
   if (provider) {
     return (
@@ -162,16 +186,14 @@ const BecomeProviderPage = () => {
     );
   }
 
-  // =====================================================
-  // USER IS NOT A PROVIDER
-  // SHOW APPLICATION FORM
-  // =====================================================
 
   return (
     <ProviderApplicationForm
+      categories={categories}
+      loadingCategories={loadingCategories}
       onSubmit={handleCreateProvider}
-      submitting={false}
-      error={error}
+      submitting={submitting}
+      error={error || categoryError}
     />
   );
 };

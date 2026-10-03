@@ -57,7 +57,7 @@ const ProviderCard = ({ provider = {} }) => {
 
         <p className="mt-5 line-clamp-3 text-sm leading-6 text-slate-600">
           {provider.businessDescription ||
-            "Professional service provider available through ServiceHub."}
+            "Professional service provider available through Helper."}
         </p>
 
         {/* Trust */}

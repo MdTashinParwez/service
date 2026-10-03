@@ -93,26 +93,62 @@ const BookingPaymentCard = ({
 
       const razorpay = new window.Razorpay(options);
 
-      razorpay.on(
+//       razorpay.on(
+//   "payment.failed",
+//   async function (response) {
+//     try {
+//       console.error(
+//         "Razorpay payment failed:",
+//         response.error
+//       );
+
+//       await markPaymentFailed(
+//         payment._id,
+//         {
+//           razorpay_order_id:
+//             razorpayOrder.id,
+
+//           reason:
+//             response.error?.description ||
+//             "Payment failed",
+//         }
+//       );
+
+//       toast.error(
+//         response.error?.description ||
+//           "Payment failed"
+//       );
+//     } catch (error) {
+//       console.error(
+//         "Failed to update payment status:",
+//         error
+//       );
+
+//       toast.error(
+//         "Payment failed"
+//       );
+//     } finally {
+//       setPaying(false);
+//     }
+//   }
+// );
+  razorpay.on(
   "payment.failed",
   async function (response) {
     try {
-      console.error(
-        "Razorpay payment failed:",
-        response.error
-      );
+  
 
-      await markPaymentFailed(
+      const failedResponse = await markPaymentFailed(
         payment._id,
         {
-          razorpay_order_id:
-            razorpayOrder.id,
-
+          razorpay_order_id: razorpayOrder.id,
           reason:
             response.error?.description ||
             "Payment failed",
         }
       );
+
+     
 
       toast.error(
         response.error?.description ||
@@ -120,19 +156,20 @@ const BookingPaymentCard = ({
       );
     } catch (error) {
       console.error(
-        "Failed to update payment status:",
+        "5. Failed to update payment status:",
         error
       );
 
       toast.error(
-        "Payment failed"
+        error.message ||
+          "Payment failed"
       );
     } finally {
       setPaying(false);
     }
   }
-);
-      razorpay.open();
+);      
+razorpay.open();
     } catch (error) {
       console.error(
         "Failed to initiate payment:",

@@ -19,8 +19,6 @@ const ProviderPage = () => {
 
         const response = await getProviderById(providerId);
 
-        console.log("PROVIDER DETAILS:", response);
-
         setProvider(response.data);
       } catch (error) {
         console.error("Failed to fetch provider:", error);

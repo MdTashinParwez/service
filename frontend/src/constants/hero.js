@@ -119,7 +119,7 @@ export const testimonials = [
   {
     name: "Vikram Nair",
     role: "Startup Founder",
-    text: "ServiceHub changed how I run my business. Found a brilliant web developer in 20 minutes. Quality is consistently exceptional.",
+    text: "Helper changed how I run my business. Found a brilliant web developer in 20 minutes. Quality is consistently exceptional.",
     rating: 5,
     img: "photo-1472099645785-5658abf4ff4e",
   },
@@ -141,7 +141,7 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: "How does ServiceHub verify providers?",
+    q: "How does Helper verify providers?",
     a: "Every provider goes through identity verification, document checks, background screening, and skill assessments before their profile becomes visible.",
   },
   {

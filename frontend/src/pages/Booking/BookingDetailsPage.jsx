@@ -37,7 +37,6 @@ const BookingDetailsPage = () => {
 
     const response = await getBookingById(bookingId);
 
-    console.log("BOOKING RESPONSE:", response.data);
 
     setBooking(response.data.booking);
     setIsProvider(response.data.isProvider);
@@ -90,10 +89,6 @@ const BookingDetailsPage = () => {
       </main>
     );
   }
-
-  // =====================================================
-  // ERROR
-  // =====================================================
 
   if (error || !booking) {
     return (

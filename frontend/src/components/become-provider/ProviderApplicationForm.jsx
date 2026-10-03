@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+
 import {
   BriefcaseBusiness,
   FileText,
@@ -47,6 +47,31 @@ const ProviderApplicationForm = ({
   const handleDocumentChange = (e) => {
     const file = e.target.files?.[0] || null;
 
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setValidationError(
+        "Please upload a PDF, JPG, or PNG file."
+      );
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setValidationError(
+        "Identity document must be smaller than 5 MB."
+      );
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       documents: file,
@@ -64,6 +89,8 @@ const ProviderApplicationForm = ({
       ...prev,
       documents: null,
     }));
+
+    setValidationError("");
   };
 
   // =====================================================
@@ -80,9 +107,25 @@ const ProviderApplicationForm = ({
       return;
     }
 
+    if (formData.businessName.trim().length < 3) {
+      setValidationError(
+        "Business name must be at least 3 characters long."
+      );
+      return;
+    }
+
     if (!formData.businessDescription.trim()) {
       setValidationError(
         "Business description is required."
+      );
+      return;
+    }
+
+    if (
+      formData.businessDescription.trim().length < 20
+    ) {
+      setValidationError(
+        "Business description must be at least 20 characters long."
       );
       return;
     }
@@ -118,21 +161,16 @@ const ProviderApplicationForm = ({
       formData.businessCategory
     );
 
-    /*
-      Backend expects:
-
-      req.files?.documents?.[0]
-
-      Therefore field name MUST be:
-      documents
-    */
-
     data.append(
       "documents",
       formData.documents
     );
 
-    await onSubmit(data);
+    const result = await onSubmit(data);
+
+    if (!result?.success && result?.message) {
+      setValidationError("");
+    }
   };
 
   const inputClass =
@@ -142,12 +180,9 @@ const ProviderApplicationForm = ({
     <main className="min-h-screen bg-gradient-to-b from-blue-50/60 via-gray-50 to-white px-4 py-10 sm:px-6 lg:py-16">
       <section className="mx-auto w-full max-w-4xl">
 
-        {/* =====================================================
-            HERO
-        ===================================================== */}
+        {/* HERO */}
 
         <div className="mb-8 text-center">
-
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200">
             <BriefcaseBusiness size={30} />
           </div>
@@ -160,26 +195,19 @@ const ProviderApplicationForm = ({
             Create your provider profile and start offering
             your services to customers.
           </p>
-
         </div>
 
-        {/* =====================================================
-            FORM
-        ===================================================== */}
+        {/* FORM */}
 
         <form
           onSubmit={handleSubmit}
           className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-xl shadow-gray-200/50"
         >
 
-          {/* =====================================================
-              BUSINESS INFORMATION
-          ===================================================== */}
+          {/* BUSINESS INFORMATION */}
 
           <div className="p-6 sm:p-8 lg:p-10">
-
             <div className="flex items-start gap-4">
-
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
                 <BriefcaseBusiness size={23} />
               </div>
@@ -194,7 +222,6 @@ const ProviderApplicationForm = ({
                   provide your services through.
                 </p>
               </div>
-
             </div>
 
             <div className="mt-8 space-y-7">
@@ -216,6 +243,7 @@ const ProviderApplicationForm = ({
                   onChange={handleChange}
                   placeholder="e.g. Sharma Home Services"
                   maxLength={100}
+                  disabled={submitting}
                   className={inputClass}
                 />
 
@@ -227,7 +255,6 @@ const ProviderApplicationForm = ({
               {/* DESCRIPTION */}
 
               <div>
-
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-semibold text-gray-800">
                     Business Description
@@ -247,16 +274,15 @@ const ProviderApplicationForm = ({
                   onChange={handleChange}
                   maxLength={1000}
                   rows={6}
+                  disabled={submitting}
                   placeholder="Describe your business, experience and the services you provide..."
                   className="mt-2.5 w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 p-4 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-50"
                 />
-
               </div>
 
               {/* CATEGORY */}
 
               <div>
-
                 <label className="mb-2.5 block text-sm font-semibold text-gray-800">
                   Business Category
                   <span className="ml-1 text-red-500">
@@ -265,18 +291,23 @@ const ProviderApplicationForm = ({
                 </label>
 
                 <div className="relative">
-
                   <select
                     name="businessCategory"
                     value={formData.businessCategory}
                     onChange={handleChange}
-                    disabled={loadingCategories}
+                    disabled={
+                      loadingCategories ||
+                      submitting ||
+                      categories.length === 0
+                    }
                     className={`${inputClass} appearance-none pr-12 disabled:cursor-not-allowed disabled:opacity-60`}
                   >
                     <option value="">
                       {loadingCategories
                         ? "Loading categories..."
-                        : "Select your business category"}
+                        : categories.length === 0
+                          ? "No categories available"
+                          : "Select your business category"}
                     </option>
 
                     {categories.map((category) => (
@@ -293,27 +324,20 @@ const ProviderApplicationForm = ({
                     size={19}
                     className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
                   />
-
                 </div>
 
                 <p className="mt-2 text-xs text-gray-400">
                   Choose the category that best matches
                   your services.
                 </p>
-
               </div>
-
             </div>
           </div>
 
-          {/* =====================================================
-              IDENTITY VERIFICATION
-          ===================================================== */}
+          {/* IDENTITY VERIFICATION */}
 
           <div className="border-t border-gray-100 bg-gray-50/60 p-6 sm:p-8 lg:p-10">
-
             <div className="flex items-start gap-4">
-
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
                 <FileText size={23} />
               </div>
@@ -328,13 +352,11 @@ const ProviderApplicationForm = ({
                   verification.
                 </p>
               </div>
-
             </div>
 
             {/* UPLOAD */}
 
             <label className="mt-8 block cursor-pointer">
-
               <div
                 className={`rounded-2xl border-2 border-dashed p-8 text-center transition ${
                   formData.documents
@@ -342,7 +364,6 @@ const ProviderApplicationForm = ({
                     : "border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50/40"
                 }`}
               >
-
                 {formData.documents ? (
                   <>
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-600">
@@ -363,7 +384,8 @@ const ProviderApplicationForm = ({
                         e.preventDefault();
                         removeDocument();
                       }}
-                      className="mt-4 text-sm font-semibold text-red-600 hover:text-red-700"
+                      disabled={submitting}
+                      className="mt-4 text-sm font-semibold text-red-600 hover:text-red-700 disabled:opacity-50"
                     >
                       Remove document
                     </button>
@@ -383,7 +405,7 @@ const ProviderApplicationForm = ({
                     </p>
 
                     <p className="mt-3 text-xs text-gray-400">
-                      PDF, JPG or PNG
+                      PDF, JPG or PNG · Max 5 MB
                     </p>
                   </>
                 )}
@@ -392,18 +414,14 @@ const ProviderApplicationForm = ({
                   type="file"
                   accept="image/*,.pdf"
                   onChange={handleDocumentChange}
+                  disabled={submitting}
                   className="hidden"
                 />
-
               </div>
-
             </label>
-
           </div>
 
-          {/* =====================================================
-              ERROR
-          ===================================================== */}
+          {/* ERROR */}
 
           {(validationError || error) && (
             <div className="mx-6 mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 sm:mx-8">
@@ -413,12 +431,9 @@ const ProviderApplicationForm = ({
             </div>
           )}
 
-          {/* =====================================================
-              FOOTER
-          ===================================================== */}
+          {/* FOOTER */}
 
           <div className="flex flex-col gap-4 border-t border-gray-100 bg-white px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <CheckCircle2
                 size={17}
@@ -434,39 +449,30 @@ const ProviderApplicationForm = ({
               type="submit"
               disabled={
                 submitting ||
-                loadingCategories
+                loadingCategories ||
+                categories.length === 0
               }
               className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-7 font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
-
               {submitting ? (
                 <>
                   <Loader2
                     size={19}
                     className="animate-spin"
                   />
-
                   Submitting...
                 </>
               ) : (
-                <>
-                  Submit Application
-                </>
+                "Submit Application"
               )}
-
             </button>
-
           </div>
-
         </form>
-
-        {/* FOOTNOTE */}
 
         <p className="mt-5 text-center text-xs leading-5 text-gray-400">
           By submitting this application, you agree to
           provide accurate information for verification.
         </p>
-
       </section>
     </main>
   );
