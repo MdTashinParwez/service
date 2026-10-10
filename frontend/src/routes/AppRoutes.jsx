@@ -25,6 +25,17 @@ import EditServicePage from "../pages/Dashboard/EditServicePage";
 import ProviderProfile from "@/pages/Dashboard/ProviderProfile";
 import UserProfile from "../pages/Profile/UserProfile";
 import ProviderNotifications from "../pages/Dashboard/ProviderNotifications";
+
+// Admin Panel Imports
+import AdminRoute from "./AdminRoute";
+import AdminLayout from "../layouts/AdminLayout";
+import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
+import AdminProvidersPage from "../pages/Admin/AdminProvidersPage";
+import AdminUsersPage from "../pages/Admin/AdminUsersPage";
+import AdminServicesPage from "../pages/Admin/AdminServicesPage";
+import AdminBookingsPage from "../pages/Admin/AdminBookingsPage";
+import AdminCategoriesPage from "../pages/Admin/AdminCategoriesPage";
+import AdminAuditLogsPage from "../pages/Admin/AdminAuditLogsPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -189,6 +200,48 @@ const router = createBrowserRouter([
 
 
 
+    ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "dashboard",
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "providers",
+        element: <AdminProvidersPage />,
+      },
+      {
+        path: "users",
+        element: <AdminUsersPage />,
+      },
+      {
+        path: "services",
+        element: <AdminServicesPage />,
+      },
+      {
+        path: "bookings",
+        element: <AdminBookingsPage />,
+      },
+      {
+        path: "categories",
+        element: <AdminCategoriesPage />,
+      },
+      {
+        path: "logs",
+        element: <AdminAuditLogsPage />,
+      },
     ],
   },
 ]);
