@@ -1,7 +1,5 @@
 # Helper — Full-Stack Service Marketplace (Frontend)
 
-<div align="center">
-
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Frontend-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://helper-ten-kappa.vercel.app/)
 [![React 19](https://img.shields.io/badge/React-19.2.7-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8.1.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
@@ -16,7 +14,6 @@
   Featuring dynamic calendar-slot booking, Razorpay payment gateway integration over HTTPS, duplex WebSocket notifications, cloud media delivery, and an administrative moderation console.
 </p>
 
-</div>
 
 ---
 
