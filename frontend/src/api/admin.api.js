@@ -285,6 +285,7 @@ export const createCategoryAdmin = async (payload) => {
 
   return apiClient("/admin/categories", {
     method: "POST",
+    headers: isFormData ? undefined : { "Content-Type": "application/json" },
     body: isFormData ? payload : JSON.stringify(payload),
   });
 };
@@ -294,8 +295,13 @@ export const updateCategoryAdmin = async (id, payload) => {
 
   return apiClient(`/admin/categories/${id}`, {
     method: "PATCH",
+    headers: isFormData ? undefined : { "Content-Type": "application/json" },
     body: isFormData ? payload : JSON.stringify(payload),
   });
+};
+
+export const toggleCategoryStatusAdmin = async (id, currentStatus) => {
+  return updateCategoryAdmin(id, { isActive: !currentStatus });
 };
 
 export const deleteCategoryAdmin = async (
@@ -304,6 +310,9 @@ export const deleteCategoryAdmin = async (
 ) => {
   return apiClient(`/admin/categories/${id}`, {
     method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       force,
       reason,
