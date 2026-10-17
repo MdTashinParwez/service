@@ -179,6 +179,9 @@ export const toggleServiceStatusAdmin = async (
 ) => {
   return apiClient(`/admin/services/${id}/toggle-status`, {
     method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       reason,
     }),
@@ -191,6 +194,9 @@ export const deleteServiceAdmin = async (
 ) => {
   return apiClient(`/admin/services/${id}`, {
     method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       reason,
     }),
